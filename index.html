@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F4EFE7">
+<title>Loonstrook Semanal</title>
+<meta name="description" content="Calculadora de salário líquido na Holanda: horas por semana ou no mês, com desconto explicado.">
+<style>
+:root{
+  --bg:#F4EFE7; --card:#FFFFFF; --fill:#F0EAE0; --fill-2:#E7DECF;
+  --label:#1F1C17; --label-2:#6F675C; --label-3:#A0978A;
+  --sep:rgba(92,72,40,.14); --nav:rgba(244,239,231,.78);
+  --tint:#94622F; --tint-soft:#F5EADC;
+  --green:#23813D; --tax:#B0522A;
+  --shadow:0 1px 2px rgba(80,60,30,.05),0 6px 20px -10px rgba(80,60,30,.16);
+  --thumb:#FFFFFF; --knob:#FFFFFF;
+  --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
+  --round:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#15130F; --card:#221F1A; --fill:#2D2923; --fill-2:#3A342D;
+    --label:#F4EFE7; --label-2:#AFA597; --label-3:#7D7468;
+    --sep:rgba(255,236,210,.1); --nav:rgba(21,19,15,.74);
+    --tint:#E2AC72; --tint-soft:#372B1F;
+    --green:#4ACB78; --tax:#F09B6D;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px -10px rgba(0,0,0,.5);
+    --thumb:#5A534A; --knob:#F4EFE7;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#15130F; --card:#221F1A; --fill:#2D2923; --fill-2:#3A342D;
+  --label:#F4EFE7; --label-2:#AFA597; --label-3:#7D7468;
+  --sep:rgba(255,236,210,.1); --nav:rgba(21,19,15,.74);
+  --tint:#E2AC72; --tint-soft:#372B1F;
+  --green:#4ACB78; --tax:#F09B6D;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px -10px rgba(0,0,0,.5);
+  --thumb:#5A534A; --knob:#F4EFE7;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--label);font:1rem/1.45 var(--sys);-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:2px solid var(--tint);outline-offset:2px}
+.tab{font-variant-numeric:tabular-nums}
+.rnd{font-family:var(--round)}
+
+/* navigation bar */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--nav);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+.nav-in{max-width:680px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px}
+.nav-title{font-weight:600;font-size:1.0625rem;letter-spacing:-.01em;opacity:0;transform:translateY(4px);transition:opacity .2s ease,transform .2s ease}
+.nav.scrolled .nav-title{opacity:1;transform:none}
+.nav.scrolled{box-shadow:0 .5px 0 var(--sep)}
+.sync{font-size:.8125rem;color:var(--label-3);display:flex;align-items:center;gap:6px}
+.sync i{width:7px;height:7px;border-radius:50%;background:var(--label-3)}
+.sync[data-state="cloud"] i{background:var(--green)}
+.sync[data-state="saving"] i{background:var(--tint)}
+
+.page{max-width:680px;margin:0 auto;padding-inline:20px;padding-block:0 64px;display:grid;gap:28px}
+.large{display:grid;gap:2px;padding-top:4px}
+.large h1{margin:0;font-size:2.125rem;line-height:1.1;font-weight:700;letter-spacing:-.022em}
+.large p{margin:0;color:var(--label-2);font-size:.9375rem}
+
+/* grouped sections */
+.section{display:grid;gap:8px}
+.sec-head{padding:0 16px;font-size:.8125rem;font-weight:500;letter-spacing:.02em;text-transform:uppercase;color:var(--label-2)}
+.sec-foot{padding:0 16px;font-size:.8125rem;color:var(--label-2);line-height:1.4}
+.group{background:var(--card);border-radius:18px;overflow:hidden;box-shadow:var(--shadow)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;min-height:50px;position:relative}
+.row + .row::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.row .l{display:grid;gap:1px;min-width:0}
+.row .l small{color:var(--label-2);font-size:.8125rem;line-height:1.35}
+.row .v{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.minus{color:var(--tax)} .plus{color:var(--green)}
+.row.total{font-weight:600}
+
+/* hero card */
+.hero{padding:6px 0 0}
+[hidden]{display:none!important}
+.monthbar{display:flex;align-items:center;justify-content:space-between;padding:6px 8px 4px 16px}
+.monthbar b{font-size:1.0625rem;font-weight:600;letter-spacing:-.01em}
+.chev{display:flex;gap:2px}
+.icon-btn{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--tint);font-size:1.5rem;line-height:1;display:grid;place-items:center;transition:transform .1s ease-out,background .15s}
+.icon-btn:hover{background:var(--tint-soft)}
+.icon-btn:active{transform:scale(.92);background:var(--tint-soft)}
+.today{border:0;background:transparent;color:var(--tint);font-weight:500;font-size:.9375rem;padding:0 10px;height:40px;border-radius:20px}
+.today:active{background:var(--tint-soft)}
+
+.seg{margin:8px 16px 0;display:grid;grid-template-columns:1fr 1fr;background:var(--fill);border-radius:10px;padding:2px;position:relative}
+.seg .thumb{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);background:var(--thumb);border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06);transform:translateX(calc(var(--i,0) * 100%));transition:transform .32s cubic-bezier(.3,.9,.3,1)}
+.seg button{position:relative;z-index:1;border:0;background:transparent;height:34px;font-size:.9375rem;font-weight:500;color:var(--label);border-radius:8px}
+.seg button[aria-pressed="true"]{font-weight:600}
+.seg button:active{opacity:.6}
+
+.entry{padding:18px 16px 16px;display:grid;justify-items:center;gap:6px}
+.entry .cap{font-size:.9375rem;color:var(--label-2)}
+.stepper{display:flex;align-items:center;gap:18px}
+.step{width:48px;height:48px;border-radius:50%;border:0;background:var(--fill);color:var(--tint);font-size:1.625rem;font-weight:500;display:grid;place-items:center;transition:transform .1s ease-out,background .15s}
+.step:active{transform:scale(.9);background:var(--fill-2)}
+.big{display:flex;align-items:baseline;justify-content:center;gap:4px;min-width:150px}
+.big input{width:3.4ch;border:0;background:transparent;text-align:right;font-family:var(--round);font-size:3.5rem;font-weight:600;letter-spacing:-.03em;line-height:1.05;font-variant-numeric:tabular-nums;padding:0;outline:none;caret-color:var(--tint)}
+.big span{font-family:var(--round);font-size:1.5rem;font-weight:600;color:var(--label-3)}
+.big:focus-within{border-radius:12px;box-shadow:0 0 0 2px var(--tint-soft)}
+.quick{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.chip{border:0;background:var(--fill);border-radius:999px;padding:6px 12px;font-size:.875rem;font-weight:500;color:var(--label);transition:transform .1s ease-out}
+.chip:active{transform:scale(.95);background:var(--fill-2)}
+.chip[aria-pressed="true"]{background:var(--tint);color:var(--card)}
+
+/* switch */
+.switch{appearance:none;-webkit-appearance:none;width:51px;height:31px;border-radius:16px;background:var(--fill-2);position:relative;flex:none;margin:0;cursor:pointer;transition:background .25s}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:var(--knob);box-shadow:0 3px 8px rgba(0,0,0,.15),0 1px 1px rgba(0,0,0,.1);transition:transform .3s cubic-bezier(.3,.9,.3,1)}
+.switch:checked{background:var(--green)}
+.switch:checked::after{transform:translateX(20px)}
+
+.weeks{display:grid}
+.wrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px 8px 16px;position:relative}
+.wrow::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.wrow .l b{display:block;font-weight:500}
+.wrow .l small{color:var(--label-2);font-size:.8125rem}
+.mini{display:flex;align-items:center;gap:4px;background:var(--fill);border-radius:10px;padding:2px}
+.mini button{width:34px;height:32px;border:0;background:transparent;border-radius:8px;color:var(--tint);font-size:1.25rem;line-height:1;transition:transform .1s ease-out}
+.mini button:active{transform:scale(.88);background:var(--fill-2)}
+.mini input{width:3.2ch;border:0;background:transparent;text-align:center;font-weight:600;font-variant-numeric:tabular-nums;outline:none;padding:0}
+.mini em{font-style:normal;color:var(--label-3);font-size:.8125rem;padding-right:8px}
+
+.results{border-top:.5px solid var(--sep);margin-top:4px}
+.res{padding:14px 16px;display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:baseline;position:relative}
+.res + .res::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
+.res .k{font-size:.9375rem;font-weight:600}
+.res .k small{display:block;font-weight:400;color:var(--label-2);font-size:.8125rem;margin-top:1px}
+.res .amt{font-family:var(--round);font-weight:600;color:var(--green);letter-spacing:-.02em;font-variant-numeric:tabular-nums;text-align:right;line-height:1.1}
+.res.week .amt{font-size:1.75rem}
+.res.month .amt{font-size:2.5rem}
+.res .sub{grid-column:1/-1;display:flex;gap:6px 14px;flex-wrap:wrap;font-size:.8125rem;color:var(--label-2)}
+.res .sub b{font-weight:500;color:var(--label);font-variant-numeric:tabular-nums}
+.res .sub .t{color:var(--tax)}
+.res.month{background:linear-gradient(to bottom,transparent,var(--tint-soft) 260%)}
+
+/* table */
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:12px 16px 12px 0;text-align:right;white-space:nowrap;border-top:.5px solid var(--sep)}
+.tbl th:first-child,.tbl td:first-child{text-align:left;padding-left:16px}
+.tbl thead th{border-top:0;font-size:.75rem;font-weight:500;letter-spacing:.02em;text-transform:uppercase;color:var(--label-3);padding-top:12px;padding-bottom:6px}
+.tbl tbody th{font-weight:500}
+.tbl tbody th small{display:block;color:var(--label-2);font-weight:400;font-size:.75rem}
+.tbl td.t{color:var(--tax)} .tbl td.n{color:var(--green);font-weight:600}
+
+.prose{padding:14px 16px;display:grid;gap:10px;font-size:.9375rem;line-height:1.5;max-width:65ch}
+.prose p{margin:0}
+.prose b{font-weight:600}
+.prose + .row::before{content:"";position:absolute;top:0;left:16px;right:0;height:.5px;background:var(--sep)}
+
+details.how{background:var(--card);border-radius:18px;box-shadow:var(--shadow);overflow:hidden}
+details.how summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;font-weight:500}
+details.how summary::-webkit-details-marker{display:none}
+details.how summary::after{content:"\203A";color:var(--label-3);font-size:1.4rem;line-height:1;transition:transform .25s ease}
+details.how[open] summary::after{transform:rotate(90deg)}
+details.how ul{margin:0;padding:0 16px 16px 34px;display:grid;gap:8px;font-size:.875rem;color:var(--label-2);line-height:1.5}
+details.how a{color:var(--tint)}
+
+@media (max-width:420px){
+  .page{padding-inline:16px}
+  .large h1{font-size:1.875rem}
+  .res.month .amt{font-size:2.125rem}
+  .big input{font-size:3rem}
+  .tbl th,.tbl td{padding-right:10px;font-size:.875rem}
+  .tbl th:first-child,.tbl td:first-child{padding-left:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important}
+}
+@media (prefers-reduced-transparency:reduce){
+  .nav{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
+}
+</style>
+</head>
+<body>
+<header class="nav" id="nav">
+  <div class="nav-in">
+    <span class="nav-title">Loonstrook</span>
+    <span class="sync" id="sync" data-state="local"><i></i><span id="syncText">Salvo neste navegador</span></span>
+  </div>
+</header>
+
+<main class="page">
+  <div class="large">
+    <h1>Loonstrook</h1>
+    <p>€ 14,99 por hora bruto · tabela fiscal <span id="taxYear">2026</span></p>
+  </div>
+
+  <section class="group hero" aria-label="Horas e totais">
+    <div class="monthbar">
+      <b id="monthLabel">Setembro de 2026</b>
+      <div class="chev">
+        <button type="button" class="today" id="thisMonth">Hoje</button>
+        <button type="button" class="icon-btn" id="prevMonth" aria-label="Mês anterior">&#8249;</button>
+        <button type="button" class="icon-btn" id="nextMonth" aria-label="Próximo mês">&#8250;</button>
+      </div>
+    </div>
+
+    <div class="seg" id="seg" role="group" aria-label="Como informar as horas">
+      <span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-mode="week" aria-pressed="true">Por semana</button>
+      <button type="button" data-mode="month" aria-pressed="false">No mês</button>
+    </div>
+
+    <div class="entry" id="entry">
+      <label class="cap" for="bigHours" id="bigCap">Horas trabalhadas por semana</label>
+      <div class="stepper">
+        <button type="button" class="step" data-big="-1" aria-label="Menos 1 hora">&minus;</button>
+        <div class="big"><input id="bigHours" type="text" inputmode="decimal" autocomplete="off" value="24"><span>h</span></div>
+        <button type="button" class="step" data-big="1" aria-label="Mais 1 hora">+</button>
+      </div>
+      <div class="quick" id="quick"></div>
+    </div>
+
+    <div id="variedWrap">
+      <div class="row">
+        <label class="l" for="varied">Horas diferentes em cada semana<small id="variedSub">Cada semana deste mês com as próprias horas</small></label>
+        <input type="checkbox" class="switch" id="varied">
+      </div>
+      <div class="weeks" id="weeks" hidden></div>
+    </div>
+
+    <div class="results">
+      <div class="res week">
+        <span class="k" id="wkLabel">Semana<small id="wkHint">24 h</small></span>
+        <span class="amt" id="wkNet">€ 0,00</span>
+        <div class="sub"><span>Bruto <b id="wkGross">€ 0,00</b></span><span>Desconto <b class="t" id="wkTax">€ 0,00</b></span></div>
+      </div>
+      <div class="res month">
+        <span class="k" id="moLabel">Setembro<small id="moHint">96 h em 4 semanas</small></span>
+        <span class="amt" id="moNet">€ 0,00</span>
+        <div class="sub"><span>Bruto <b id="moGross">€ 0,00</b></span><span>Desconto <b class="t" id="moTax">€ 0,00</b></span><span id="moPensionWrap" hidden>Pensão <b class="t" id="moPension">€ 0,00</b></span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">Antes e depois do desconto</div>
+    <div class="group">
+      <table class="tbl">
+        <thead><tr><th scope="col"></th><th scope="col">Bruto</th><th scope="col">Desconto</th><th scope="col">Líquido</th></tr></thead>
+        <tbody id="rates"></tbody>
+      </table>
+      <div class="row">
+        <span class="l">Dias trabalhados por semana<small>Usado para o valor por dia</small></span>
+        <div class="mini">
+          <button type="button" data-days="-1" aria-label="Menos 1 dia">&minus;</button>
+          <input id="days" type="text" inputmode="numeric" autocomplete="off" aria-label="Dias por semana">
+          <button type="button" data-days="1" aria-label="Mais 1 dia">+</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">Quanto é descontado e por quê</div>
+    <div class="group">
+      <div class="prose" id="why"></div>
+      <div id="slip"></div>
+      <div class="row">
+        <label class="l" for="korting">Empregador aplica os créditos<small>Loonheffingskorting. Desligue se este for seu segundo emprego.</small></label>
+        <input type="checkbox" class="switch" id="korting">
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">Outros descontos esperados</div>
+    <div class="group">
+      <div class="row">
+        <label class="l" for="pension">Pensão da horeca (PH&amp;C)<small>Obrigatória em cafés, restaurantes e hotéis a partir dos 18 anos. Ligue para já descontar nos totais.</small></label>
+        <input type="checkbox" class="switch" id="pension">
+      </div>
+      <div class="row">
+        <span class="l"><span id="pensionTitle">Pensão estimada no mês</span><small id="pensionSub"></small></span>
+        <span class="v minus" id="pensionVal">€ 0,00</span>
+      </div>
+      <div class="row">
+        <span class="l">Seguro saúde obrigatório<small>Não sai do salário: você paga direto à seguradora. Média de 2026. A zorgtoeslag pode devolver parte.</small></span>
+        <span class="v minus">€ 159,30</span>
+      </div>
+      <div class="row total">
+        <span class="l">Sobra no mês depois do seguro</span>
+        <span class="v" id="afterHealth">€ 0,00</span>
+      </div>
+      <div class="row">
+        <span class="l">Vakantiegeld acumulado<small>8% do bruto, pago à parte em maio ou junho e tributado na hora</small></span>
+        <span class="v plus" id="vacation">€ 0,00</span>
+      </div>
+    </div>
+    <p class="sec-foot">Seguro-desemprego (WW), invalidez (WIA) e a contribuição de saúde (Zvw) são pagos pelo empregador e não saem do seu bruto. Em supermercados a pensão é de outro fundo; confira o percentual no contrato.</p>
+  </section>
+
+  <section class="section">
+    <div class="sec-head">Horas no mês</div>
+    <div class="group" id="hoursGroup"></div>
+  </section>
+
+  <details class="how">
+    <summary>Como a conta é feita</summary>
+    <ul>
+      <li>Mesmo método do thetax.nl. Por semana: o bruto da semana é projetado para o ano (× 52), o imposto do ano é calculado e dividido por 52. No mês: o bruto do mês é projetado × 12 e dividido por 12.</li>
+      <li>Por semana, o mês soma as semanas que começam nele (segunda-feira). No modo mês, a média semanal usa 4,33 semanas por mês (52 ÷ 12).</li>
+      <li>Pensão PH&amp;C 2026: 8,4% de pensão + 0,17% de pensão para dependentes, sobre o salário acima da franquia de € 15.308 por ano. A conta divide a franquia por hora considerando jornada cheia de 38 h; isso é uma estimativa, o valor exato aparece no holerite. A pensão sai antes do imposto.</li>
+      <li>O holerite real pode variar alguns euros, porque o empregador usa a tabela do período de pagamento. O acerto final acontece na declaração anual (aangifte).</li>
+      <li>Fontes: motor de cálculo do <a href="https://thetax.nl" target="_blank" rel="noopener">thetax.nl</a> (código aberto, MIT, Stepan Suvorov); <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noopener">tarifas e créditos 2026, Belastingdienst</a>; <a href="https://maqqie.nl/kennisbank/arbeidsrecht-en-wetgeving/horeca-pensioen-2025-alles-wat-je-moet-weten" target="_blank" rel="noopener">pensão horeca 2026, Maqqie</a>; <a href="https://www.zorgwijzer.nl/zorgverzekering-2026/zorgverzekering-2026-alle-premies-bekend-overzicht" target="_blank" rel="noopener">prêmios do seguro saúde 2026, Zorgwijzer</a>.</li>
+    </ul>
+  </details>
+</main>
+
+<script>
+const constants = {"workingWeeks":52,"workingDays":255,"payrollTax":{"2025":[{"bracket":1,"min":0,"max":38441,"rate":0.0817},{"bracket":2,"min":38442,"max":76817,"rate":0.3748},{"bracket":3,"min":76818,"rate":0.495}],"2026":[{"bracket":1,"min":0,"max":38883,"rate":0.081},{"bracket":2,"min":38884,"max":78426,"rate":0.3756},{"bracket":3,"min":78427,"rate":0.495}]},"socialPercent":{"2025":[{"bracket":1,"min":0,"max":38440,"rate":0.3582,"social":0.2765,"older":0.0975}],"2026":[{"bracket":1,"min":0,"max":38882,"rate":0.3575,"social":0.2765,"older":0.0975}]},"generalCredit":{"2025":[{"bracket":1,"min":0,"max":28407,"rate":3068},{"bracket":2,"min":28407,"max":76817,"rate":-0.06337},{"bracket":3,"min":76818,"rate":0}],"2026":[{"bracket":1,"min":0,"max":29737,"rate":3115},{"bracket":2,"min":29737,"max":78426,"rate":-0.06398},{"bracket":3,"min":78427,"rate":0}]},"labourCredit":{"2025":[{"bracket":1,"min":0,"max":12169,"rate":0.08053},{"bracket":2,"min":12169,"max":26288,"rate":0.3003},{"bracket":3,"min":26288,"max":43071,"rate":0.02258},{"bracket":4,"min":43071,"max":129078,"rate":-0.0651},{"bracket":5,"min":129078,"rate":0}],"2026":[{"bracket":1,"min":0,"max":11965,"rate":0.08324},{"bracket":2,"min":11965,"max":25845,"rate":0.31009},{"bracket":3,"min":25845,"max":45592,"rate":0.0195},{"bracket":4,"min":45592,"max":132948,"rate":-0.0651},{"bracket":5,"min":132948,"rate":0}]},"lowWageThreshold":{"2025":8566,"2026":8714},"elderCredit":{"2025":[{"bracket":1,"min":0,"max":45308,"rate":2035},{"bracket":2,"min":45308,"max":58875,"rate":-0.15},{"bracket":3,"min":58875,"rate":0}],"2026":[{"bracket":1,"min":0,"max":46002,"rate":2067},{"bracket":2,"min":46002,"max":59782,"rate":-0.15},{"bracket":3,"min":59782,"rate":0}]}};
+/* ---- SalaryPaycheck: engine from thetax.nl (MIT © Stepan Suvorov), 30% ruling branch removed ---- */
+const roundNumber = (value, places = 2) => Number(value.toFixed(places));
+class SalaryPaycheck {
+  constructor({ income, allowance, socialSecurity, older, hours }, startFrom, year) {
+    this.grossYear = this.grossMonth = this.grossWeek = this.grossDay = this.grossHour = 0;
+    this['gross' + startFrom] = income;
+    let grossYear = this.grossYear + this.grossMonth * 12 + this.grossWeek * constants.workingWeeks;
+    grossYear += this.grossDay * constants.workingDays + this.grossHour * constants.workingWeeks * hours;
+    if (!grossYear || grossYear < 0) grossYear = 0;
+    this.grossAllowance = allowance ? roundNumber(grossYear * (0.08 / 1.08), 2) : 0;
+    this.grossYear = roundNumber(grossYear, 2);
+    this.taxableYear = roundNumber(grossYear - this.grossAllowance, 2);
+    this.payrollTax = -1 * SalaryPaycheck.getRates(constants.payrollTax[year], this.taxableYear, 'rate');
+    this.socialTax = socialSecurity ? -1 * SalaryPaycheck.getRates(constants.socialPercent[year], this.taxableYear, older ? 'older' : 'social') : 0;
+    this.taxWithoutCredit = roundNumber(this.payrollTax + this.socialTax, 2);
+    const socialCredit = SalaryPaycheck.getSocialCredit(year, older, socialSecurity);
+    this.labourCredit = SalaryPaycheck.getLabourCredit(year, this.taxableYear, socialCredit);
+    this.generalCredit = SalaryPaycheck.getRates(constants.generalCredit[year], this.taxableYear, 'rate', socialCredit);
+    if (this.taxWithoutCredit + this.labourCredit + this.generalCredit > 0) {
+      this.generalCredit = -1 * (this.taxWithoutCredit + this.labourCredit);
+    }
+    this.taxCredit = roundNumber(this.labourCredit + this.generalCredit, 2);
+    this.incomeTax = roundNumber(this.taxWithoutCredit + this.taxCredit, 2);
+    this.netYear = this.taxableYear + this.incomeTax;
+  }
+  static getLabourCredit(year, salary, multiplier = 1) {
+    if (salary < constants.lowWageThreshold[year] / multiplier) return 0;
+    return SalaryPaycheck.getRates(constants.labourCredit[year], salary, 'rate', multiplier);
+  }
+  static getSocialCredit(year, older, socialSecurity) {
+    const b = constants.socialPercent[year][0];
+    if (!socialSecurity) return (b.rate - b.social) / b.rate;
+    if (older) return (b.rate + b.older - b.social) / b.rate;
+    return 1;
+  }
+  static getRates(brackets, salary, kind, multiplier = 1) {
+    let amount = 0;
+    brackets.some((bracket) => {
+      const delta = bracket.max ? bracket.max - bracket.min : Infinity;
+      const tax = Math.round(multiplier * (kind && bracket[kind] ? bracket[kind] : bracket.rate) * 100000) / 100000;
+      const isPercent = tax != 0 && tax > -1 && tax < 1;
+      if (salary <= delta) {
+        if (isPercent) amount += roundNumber(salary * tax, 2); else amount = tax;
+        amount = roundNumber(amount, 2);
+        return true;
+      }
+      if (isPercent) amount += roundNumber(delta * tax, 2); else amount = tax;
+      salary -= delta;
+      return false;
+    });
+    return amount;
+  }
+}
+
+
+/* ---- fixed inputs ---- */
+const RATE = 14.99;
+const HEALTH = 159.30;
+const PENSION_RATE = 0.084 + 0.0017;
+const PENSION_FRANCHISE_HOUR = 15308 / (52 * 38);
+const WEEKS_PER_MONTH = 52 / 12;
+
+/* ---- helpers ---- */
+const $ = (id) => document.getElementById(id);
+const eur = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'EUR' });
+const fmt = (n) => eur.format(Math.abs(n) < 0.005 ? 0 : n);
+const eur0 = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const dec = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 });
+const pct1 = new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const pct2 = new Intl.NumberFormat('pt-BR', { style: 'percent', minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const pct0 = new Intl.NumberFormat('pt-BR', { style: 'percent', maximumFractionDigits: 0 });
+const parseNum = (s) => { const v = parseFloat(String(s ?? '').replace(/\s/g, '').replace(',', '.')); return isFinite(v) && v >= 0 ? v : 0; };
+const showNum = (n) => String(Math.round((n || 0) * 100) / 100).replace('.', ',');
+const pad = (n) => String(n).padStart(2, '0');
+const YEARS = Object.keys(constants.payrollTax).map(Number).sort();
+const taxYearFor = (y) => Math.min(Math.max(y, YEARS[0]), YEARS[YEARS.length - 1]);
+const clampH = (h) => Math.min(168, Math.max(0, Math.round(h * 100) / 100));
+
+function isoWeek(d) {
+  const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const day = t.getUTCDay() || 7; t.setUTCDate(t.getUTCDate() + 4 - day);
+  const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+  return Math.ceil(((t - y0) / 86400000 + 1) / 7);
+}
+const shortDate = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' });
+function weeksOf(y, m) {
+  const out = []; const last = new Date(y, m + 1, 0).getDate();
+  for (let d = 1; d <= last; d++) {
+    const date = new Date(y, m, d);
+    if (date.getDay() !== 1) continue;
+    const end = new Date(y, m, d + 6);
+    out.push({ key: `${y}-${pad(m + 1)}-${pad(d)}`, wk: isoWeek(date), label: `${date.getDate()} a ${shortDate.format(end).replace('.', '')}` });
+  }
+  return out;
+}
+
+/* ---- state ---- */
+const STORE_KEY = 'loonstrook-v1';
+const now = new Date();
+let view = { y: now.getFullYear(), m: now.getMonth() };
+const mKey = () => `${view.y}-${pad(view.m + 1)}`;
+
+function freshState() {
+  return { v: 2, mode: 'week', weekHours: 24, varied: {}, weeks: {}, monthHours: {}, days: 4, korting: true, pension: false };
+}
+function normalize(s) {
+  const d = freshState();
+  if (!s || typeof s !== 'object') return d;
+  if (s.v === 2) {
+    return { ...d, ...s, varied: { ...(s.varied || {}) }, weeks: { ...(s.weeks || {}) }, monthHours: { ...(s.monthHours || {}) } };
+  }
+  if (s.v === 1) { // migrate first version (hours per week, per month)
+    const out = d;
+    if (s.settings) { out.days = s.settings.defDays || 4; out.korting = s.settings.korting !== false; }
+    let first = 0;
+    for (const [mk, mo] of Object.entries(s.months || {})) {
+      const vals = Object.entries(mo.weeks || {}).map(([k, w]) => { out.weeks[k] = w.h || 0; return w.h || 0; });
+      if (!first) first = vals.find((v) => v > 0) || 0;
+      if (new Set(vals).size > 1) out.varied[mk] = true;
+    }
+    out.weekHours = first || 24;
+    return out;
+  }
+  return d;
+}
+let state;
+try { const raw = localStorage.getItem(STORE_KEY); state = raw ? normalize(JSON.parse(raw)) : freshState(); } catch (e) { state = freshState(); }
+
+/* ---- persistence: browser + artifact database ---- */
+let dbRef = null, saveTimer = null, writeChain = Promise.resolve(), lastSynced = '';
+function setSync(kind) {
+  $('sync').dataset.state = kind;
+  $('syncText').textContent = kind === 'cloud' ? 'Salvo na nuvem' : kind === 'saving' ? 'Salvando…' : 'Salvo neste navegador';
+}
+function persist() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  if (!dbRef) return;
+  setSync('saving');
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    saveTimer = null;
+    const body = JSON.parse(JSON.stringify(state));
+    writeChain = writeChain.then(() => dbRef.set(body)).then(() => { lastSynced = JSON.stringify(body); setSync('cloud'); }).catch(() => setSync('local'));
+  }, 600);
+}
+(async () => {
+  try {
+    if (!window.claude || !window.claude.use) return;
+    const db = await window.claude.use('db');
+    if (!db) return;
+    dbRef = db.doc('loonstrook/state');
+    let first = true;
+    dbRef.onSnapshot((snap) => {
+      if (!snap.exists) { if (first) { first = false; persist(); } return; }
+      first = false;
+      if (saveTimer) return;
+      const incoming = JSON.stringify(snap.data());
+      if (incoming === lastSynced) { setSync('cloud'); return; }
+      lastSynced = incoming;
+      const wasV1 = snap.data().v !== 2;
+      state = normalize(snap.data());
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+      setSync('cloud');
+      renderAll();
+      if (wasV1) persist();
+    }, () => setSync('local'));
+  } catch (e) {}
+})();
+
+/* ---- calculation ---- */
+function pensionFor(hours) {
+  return state.pension ? PENSION_RATE * Math.max(0, hours * (RATE - PENSION_FRANCHISE_HOUR)) : 0;
+}
+function period(hours, kind, year, withPension = state.pension) {
+  const gross = hours * RATE;
+  const pension = withPension ? PENSION_RATE * Math.max(0, hours * (RATE - PENSION_FRANCHISE_HOUR)) : 0;
+  const z = { hours, gross, pension, taxable: 0, tax: 0, net: 0, payroll: 0, social: 0, general: 0, labour: 0 };
+  if (gross <= 0) return z;
+  const taxable = gross - pension;
+  const p = new SalaryPaycheck({ income: taxable, allowance: false, socialSecurity: true, older: false, hours: 40 }, kind, year);
+  const div = kind === 'Week' ? constants.workingWeeks : 12;
+  const taxYear = state.korting ? p.incomeTax : p.taxWithoutCredit;
+  return {
+    hours, gross, pension, taxable,
+    tax: -taxYear / div, net: taxable + taxYear / div,
+    payroll: -p.payrollTax / div, social: -p.socialTax / div,
+    general: state.korting ? p.generalCredit / div : 0, labour: state.korting ? p.labourCredit / div : 0,
+  };
+}
+const KEYS = ['hours', 'gross', 'pension', 'taxable', 'tax', 'net', 'payroll', 'social', 'general', 'labour'];
+const add = (a, b) => { for (const k of KEYS) a[k] = (a[k] || 0) + (b[k] || 0); return a; };
+const scale = (a, f) => { const o = {}; for (const k of KEYS) o[k] = (a[k] || 0) * f; return o; };
+
+function computeMonth(withPension) {
+  const year = taxYearFor(view.y);
+  const weeks = weeksOf(view.y, view.m);
+  const key = mKey();
+  if (state.mode === 'month') {
+    const H = state.monthHours[key] ?? Math.round(state.weekHours * weeks.length * 100) / 100;
+    const saved = state.pension; state.pension = withPension;
+    const mo = period(H, 'Month', year);
+    state.pension = saved;
+    return { mode: 'month', weeksCount: WEEKS_PER_MONTH, worked: H > 0 ? WEEKS_PER_MONTH : 0, month: mo, week: scale(mo, 1 / WEEKS_PER_MONTH), days: H > 0 ? state.days * WEEKS_PER_MONTH : 0, perWeek: [] };
+  }
+  const varied = !!state.varied[key];
+  const month = {}; let worked = 0; const perWeek = [];
+  const saved = state.pension; state.pension = withPension;
+  for (const w of weeks) {
+    const h = varied ? (state.weeks[w.key] ?? state.weekHours) : state.weekHours;
+    const r = period(h, 'Week', year);
+    perWeek.push({ w, r });
+    add(month, r); if (h > 0) worked++;
+  }
+  state.pension = saved;
+  for (const k of KEYS) month[k] = month[k] || 0;
+  const week = worked ? scale(month, 1 / worked) : scale(month, 0);
+  return { mode: 'week', varied, weeksCount: weeks.length, worked, month, week, days: worked * state.days, perWeek };
+}
+
+/* ---- rendering ---- */
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+function renderAll() {
+  const key = mKey();
+  const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(new Date(view.y, view.m, 1));
+  $('monthLabel').textContent = cap(monthName);
+  $('taxYear').textContent = taxYearFor(view.y);
+
+  const mode = state.mode;
+  const seg = $('seg');
+  seg.style.setProperty('--i', mode === 'month' ? 1 : 0);
+  seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+
+  const weeks = weeksOf(view.y, view.m);
+  const varied = mode === 'week' && !!state.varied[key];
+  $('variedWrap').hidden = mode !== 'week';
+  $('varied').checked = varied;
+  $('entry').hidden = varied;
+  $('weeks').hidden = !varied;
+  $('bigCap').textContent = mode === 'month' ? 'Horas trabalhadas no mês' : 'Horas trabalhadas por semana';
+  const bigVal = mode === 'month' ? (state.monthHours[key] ?? state.weekHours * weeks.length) : state.weekHours;
+  if (document.activeElement !== $('bigHours')) $('bigHours').value = showNum(bigVal);
+
+  const presets = mode === 'month' ? [64, 80, 96, 120, 160] : [16, 20, 24, 32, 40];
+  $('quick').innerHTML = presets.map((p) => `<button type="button" class="chip" data-preset="${p}" aria-pressed="${p === bigVal}">${p} h</button>`).join('');
+
+  const wEl = $('weeks');
+  const sig = key + ':' + weeks.length;
+  if (wEl.dataset.sig !== sig) {
+    wEl.dataset.sig = sig;
+    wEl.innerHTML = weeks.map((w) => `
+      <div class="wrow" data-key="${w.key}">
+        <span class="l"><b>Semana ${w.wk}</b><small>${w.label}</small></span>
+        <div class="mini">
+          <button type="button" data-wstep="-1" aria-label="Menos 1 hora na semana ${w.wk}">&minus;</button>
+          <input id="w-${w.key}" type="text" inputmode="decimal" autocomplete="off" aria-label="Horas na semana ${w.wk}">
+          <em>h</em>
+          <button type="button" data-wstep="1" aria-label="Mais 1 hora na semana ${w.wk}">+</button>
+        </div>
+      </div>`).join('');
+  }
+  weeks.forEach((w) => {
+    const inp = $('w-' + w.key);
+    if (inp && document.activeElement !== inp) inp.value = showNum(state.weeks[w.key] ?? state.weekHours);
+  });
+  $('variedSub').textContent = `${weeks.length} semanas começam em ${monthName.split(' ')[0]}`;
+  if (document.activeElement !== $('days')) $('days').value = showNum(state.days);
+  $('korting').checked = !!state.korting;
+  $('pension').checked = !!state.pension;
+  compute();
+}
+
+function compute() {
+  const R = computeMonth(state.pension);
+  const other = computeMonth(!state.pension);
+  const { month: M, week: W } = R;
+  const monthShort = cap(new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date(view.y, view.m, 1)));
+
+  // hero
+  const weekLabel = R.mode === 'month' ? 'Média por semana' : (R.varied ? 'Média por semana' : 'Semana');
+  $('wkLabel').firstChild.nodeValue = weekLabel;
+  $('wkHint').textContent = `${dec.format(W.hours)} h × ${fmt(RATE)}`;
+  $('wkNet').textContent = fmt(W.net);
+  $('wkGross').textContent = fmt(W.gross);
+  $('wkTax').textContent = fmt(W.tax + W.pension);
+  $('moLabel').firstChild.nodeValue = monthShort;
+  $('moHint').textContent = R.mode === 'month'
+    ? `${dec.format(M.hours)} h no mês`
+    : `${dec.format(M.hours)} h em ${R.weeksCount} semanas`;
+  $('moNet').textContent = fmt(M.net);
+  $('moGross').textContent = fmt(M.gross);
+  $('moTax').textContent = fmt(M.tax);
+  $('moPensionWrap').hidden = !state.pension;
+  $('moPension').textContent = fmt(M.pension);
+  document.querySelectorAll('#quick .chip').forEach((c) => {
+    const key = mKey();
+    const v = state.mode === 'month' ? (state.monthHours[key] ?? state.weekHours * R.weeksCount) : state.weekHours;
+    c.setAttribute('aria-pressed', String(Number(c.dataset.preset) === v));
+  });
+
+  // rates table
+  const ded = (x) => x.tax + x.pension;
+  const div = (a, b) => (b > 0 ? a / b : 0);
+  const line = (label, sub, n) => `<tr><th scope="row">${label}${sub ? `<small>${sub}</small>` : ''}</th>
+    <td>${fmt(div(M.gross, n))}</td><td class="t">${fmt(div(ded(M), n))}</td><td class="n">${fmt(div(M.net, n))}</td></tr>`;
+  const weeksN = R.mode === 'month' ? WEEKS_PER_MONTH : R.worked;
+  $('rates').innerHTML =
+    line('Hora', '', M.hours) +
+    line('Dia', `${dec.format(div(W.hours, state.days))} h por dia`, R.days) +
+    line('Semana', R.mode === 'month' ? 'média de 4,33 por mês' : (R.varied ? 'média' : ''), weeksN) +
+    line('Mês', monthShort.toLowerCase(), M.hours > 0 ? 1 : 0);
+
+  // why
+  const year = taxYearFor(view.y);
+  const annualTaxable = R.mode === 'month' ? M.taxable * 12 : W.taxable * 52;
+  const P = new SalaryPaycheck({ income: annualTaxable, allowance: false, socialSecurity: true, older: false, hours: 40 }, 'Year', year);
+  const bp = constants.payrollTax[year][0].rate, bs = constants.socialPercent[year][0].social, b1 = constants.payrollTax[year][0].max;
+  const eff = div(M.tax, M.gross);
+  const credits = P.labourCredit + P.generalCredit;
+  const cover = div(credits, -P.taxWithoutCredit);
+  let html = '';
+  if (M.gross <= 0) {
+    html = `<p>Coloque suas horas no painel acima para ver o desconto explicado.</p>`;
+  } else {
+    html += `<p>Dos <b>${fmt(M.gross)}</b> brutos do mês, <b>${fmt(M.tax)}</b> ficam com a Belastingdienst. Isso é <b>${pct1.format(eff)}</b> do seu bruto, ou ${fmt(eff * 100)} a cada € 100. No holerite esse desconto aparece como <b>loonheffing</b>.</p>`;
+    if (state.pension) html += `<p>Antes do imposto sai a pensão da horeca, <b>${fmt(M.pension)}</b> no mês. O imposto é calculado sobre o que sobra, por isso ele fica um pouco menor.</p>`;
+    html += `<p>A loonheffing junta duas cobranças: imposto de renda (${pct2.format(bp)}) e volksverzekeringen (${pct2.format(bs)}), que financiam a aposentadoria do Estado (AOW), a pensão de viúvos e órfãos (Anw) e os cuidados de longa duração (Wlz). Até ${eur0.format(b1)} de renda por ano, as duas somam ${pct2.format(bp + bs)}.</p>`;
+    html += state.korting
+      ? `<p>Por que tão menos? Com esse ritmo de horas sua renda projetada para o ano é <b>${eur0.format(annualTaxable)}</b>. Nessa faixa você tem dois créditos que abatem o imposto: algemene heffingskorting (${eur0.format(P.generalCredit)} no ano) e arbeidskorting (${eur0.format(P.labourCredit)} no ano). Juntos eles cobrem ${pct0.format(Math.min(1, cover))} do que seria cobrado.</p>`
+      : `<p>Este empregador não está aplicando os créditos, então o desconto fica perto dos ${pct2.format(bp + bs)} cheios. Se ele for seu único emprego, peça para aplicar a loonheffingskorting. Os créditos a que você tem direito voltam na declaração anual.</p>`;
+  }
+  $('why').innerHTML = html;
+  const r = (label, sub, v, cls = '') => `<div class="row ${cls}"><span class="l">${label}${sub ? `<small>${sub}</small>` : ''}</span><span class="v">${v}</span></div>`;
+  $('slip').innerHTML =
+    r('Bruto do mês', `${dec.format(M.hours)} h × ${fmt(RATE)}`, fmt(M.gross)) +
+    (state.pension ? r('Pensão horeca (PH&amp;C)', 'sai antes do imposto', `<span class="minus">− ${fmt(M.pension)}</span>`) : '') +
+    r('Imposto de renda', 'loonbelasting', `<span class="minus">− ${fmt(M.payroll)}</span>`) +
+    r('Volksverzekeringen', 'AOW, Anw e Wlz', `<span class="minus">− ${fmt(M.social)}</span>`) +
+    (state.korting ? r('Algemene heffingskorting', 'crédito geral', `<span class="plus">+ ${fmt(M.general)}</span>`) +
+                     r('Arbeidskorting', 'crédito por trabalhar', `<span class="plus">+ ${fmt(M.labour)}</span>`) : '') +
+    r('Líquido do mês', '', fmt(M.net), 'total');
+
+  // other deductions
+  const pensMonth = state.pension ? M.pension : other.month.pension;
+  const netDiff = state.pension ? other.month.net - M.net : M.net - other.month.net;
+  $('pensionTitle').textContent = state.pension ? 'Pensão no mês' : 'Se tiver pensão da horeca';
+  $('pensionSub').textContent = state.pension
+    ? `Já descontada nos totais. No líquido pesa ${fmt(netDiff)}, porque reduz o imposto.`
+    : `Sairiam ${fmt(pensMonth)} do bruto e o líquido cairia ${fmt(netDiff)}. Estimativa.`;
+  $('pensionVal').textContent = '− ' + fmt(pensMonth);
+  $('afterHealth').textContent = fmt(M.net - HEALTH);
+  $('vacation').textContent = '+ ' + fmt(M.gross * 0.08);
+
+  // hours group
+  const hr = (label, v, sub) => `<div class="row"><span class="l">${label}${sub ? `<small>${sub}</small>` : ''}</span><span class="v">${v}</span></div>`;
+  let hg = hr('Total de horas no mês', `<b>${dec.format(M.hours)} h</b>`) +
+    hr('Dias trabalhados', `${R.mode === 'month' ? '≈ ' : ''}${dec.format(Math.round(R.days * 10) / 10)}`, `${dec.format(state.days)} por semana`) +
+    hr('Semanas', R.mode === 'month' ? '4,33' : String(R.weeksCount), R.mode === 'month' ? 'média de um mês (52 ÷ 12)' : 'semanas que começam neste mês');
+  if (R.mode === 'week' && R.varied) {
+    hg += R.perWeek.map(({ w, r: x }) => hr(`Semana ${w.wk}`, `${dec.format(x.hours)} h · <span class="plus">${fmt(x.net)}</span>`, w.label)).join('');
+  }
+  $('hoursGroup').innerHTML = hg;
+}
+
+/* ---- events ---- */
+const key = () => mKey();
+function setBig(v) {
+  v = clampH(v);
+  if (state.mode === 'month') state.monthHours[key()] = v; else state.weekHours = v;
+}
+$('bigHours').addEventListener('input', () => { setBig(parseNum($('bigHours').value)); compute(); persist(); });
+$('bigHours').addEventListener('blur', () => renderAll());
+document.querySelectorAll('[data-big]').forEach((b) => b.addEventListener('click', () => {
+  const cur = parseNum($('bigHours').value);
+  setBig(Math.max(0, cur + Number(b.dataset.big)));
+  renderAll(); persist();
+}));
+$('quick').addEventListener('click', (e) => {
+  const c = e.target.closest('[data-preset]'); if (!c) return;
+  setBig(Number(c.dataset.preset)); renderAll(); persist();
+});
+$('seg').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-mode]'); if (!b || b.dataset.mode === state.mode) return;
+  const R = computeMonth(state.pension);
+  if (b.dataset.mode === 'month' && state.monthHours[key()] == null) state.monthHours[key()] = Math.round(R.month.hours * 100) / 100;
+  state.mode = b.dataset.mode; renderAll(); persist();
+});
+$('varied').addEventListener('change', () => {
+  const k = key();
+  if ($('varied').checked) {
+    state.varied[k] = true;
+    weeksOf(view.y, view.m).forEach((w) => { if (state.weeks[w.key] == null) state.weeks[w.key] = state.weekHours; });
+  } else delete state.varied[k];
+  renderAll(); persist();
+});
+$('weeks').addEventListener('input', (e) => {
+  const row = e.target.closest('.wrow'); if (!row) return;
+  state.weeks[row.dataset.key] = clampH(parseNum(e.target.value)); compute(); persist();
+});
+$('weeks').addEventListener('click', (e) => {
+  const b = e.target.closest('[data-wstep]'); if (!b) return;
+  const row = b.closest('.wrow'); const k = row.dataset.key;
+  state.weeks[k] = clampH((state.weeks[k] ?? state.weekHours) + Number(b.dataset.wstep));
+  renderAll(); persist();
+});
+$('weeks').addEventListener('focusout', () => setTimeout(renderAll, 0));
+$('days').addEventListener('input', () => { state.days = Math.min(7, parseNum($('days').value)) || 0; compute(); persist(); });
+$('days').addEventListener('blur', () => renderAll());
+document.querySelectorAll('[data-days]').forEach((b) => b.addEventListener('click', () => {
+  state.days = Math.min(7, Math.max(1, (state.days || 0) + Number(b.dataset.days))); renderAll(); persist();
+}));
+$('korting').addEventListener('change', () => { state.korting = $('korting').checked; compute(); persist(); });
+$('pension').addEventListener('change', () => { state.pension = $('pension').checked; compute(); persist(); });
+const shift = (n) => { const d = new Date(view.y, view.m + n, 1); view = { y: d.getFullYear(), m: d.getMonth() }; renderAll(); };
+$('prevMonth').addEventListener('click', () => shift(-1));
+$('nextMonth').addEventListener('click', () => shift(1));
+$('thisMonth').addEventListener('click', () => { view = { y: now.getFullYear(), m: now.getMonth() }; renderAll(); });
+const nav = $('nav');
+addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
+
+renderAll();
+</script>
+
+</body>
+</html>
