@@ -2,9 +2,11 @@
 
 Calculadora de salário líquido na Holanda para quem recebe por hora (€ 14,99 bruto).
 
-Você informa as horas trabalhadas por semana ou no mês e a página mostra:
+Você informa as horas trabalhadas dia a dia no calendário, por semana ou no mês, e a página mostra:
 
 - total líquido da semana e do mês
+- calendário do mês com as horas de cada dia e o líquido do dia
+- widgets: hoje, resumo do mês com barras por semana e calculadora (com "× 14,99" e "Usar como horas")
 - bruto, desconto e líquido por hora, dia, semana e mês
 - quanto é descontado e por quê (loonbelasting, volksverzekeringen, heffingskorting e arbeidskorting)
 - outros descontos esperados: pensão da horeca (PH&C, estimativa), seguro saúde e vakantiegeld
@@ -21,6 +23,8 @@ Para publicar no GitHub Pages: suba o `index.html` na raiz do repositório, vá 
 ## Como a conta é feita
 
 Mesmo método do [thetax.nl](https://thetax.nl): o bruto da semana é projetado para o ano (x 52), o imposto anual é calculado com as faixas e créditos oficiais e dividido de volta. No modo mês, a projeção é x 12.
+
+No modo dia a dia, as horas de cada semana (segunda a domingo) são somadas e calculadas como semana. Se a semana cruza dois meses, cada mês fica com a parte das horas que caiu nele.
 
 Tabelas fiscais incluídas: 2025 e 2026.
 

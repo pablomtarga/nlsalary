@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#F4EFE7">
 <title>Loonstrook Semanal</title>
-<meta name="description" content="Calculadora de salário líquido na Holanda: horas por semana ou no mês, com desconto explicado.">
+<meta name="description" content="Calculadora de salário líquido na Holanda: calendário dia a dia, horas por semana ou no mês, com desconto explicado.">
 <style>
 :root{
   --bg:#F4EFE7; --card:#FFFFFF; --fill:#F0EAE0; --fill-2:#E7DECF;
   --label:#1F1C17; --label-2:#6F675C; --label-3:#A0978A;
   --sep:rgba(92,72,40,.14); --nav:rgba(244,239,231,.78);
   --tint:#94622F; --tint-soft:#F5EADC;
-  --green:#23813D; --tax:#B0522A;
+  --green:#23813D; --tax:#B0522A; --red:#E0443A;
   --shadow:0 1px 2px rgba(80,60,30,.05),0 6px 20px -10px rgba(80,60,30,.16);
   --thumb:#FFFFFF; --knob:#FFFFFF;
   --sys:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,Roboto,"Helvetica Neue",Arial,sans-serif;
@@ -25,7 +25,7 @@
     --label:#F4EFE7; --label-2:#AFA597; --label-3:#7D7468;
     --sep:rgba(255,236,210,.1); --nav:rgba(21,19,15,.74);
     --tint:#E2AC72; --tint-soft:#372B1F;
-    --green:#4ACB78; --tax:#F09B6D;
+    --green:#4ACB78; --tax:#F09B6D; --red:#FF5F52;
     --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px -10px rgba(0,0,0,.5);
     --thumb:#5A534A; --knob:#F4EFE7;
     color-scheme:dark;
@@ -36,7 +36,7 @@
   --label:#F4EFE7; --label-2:#AFA597; --label-3:#7D7468;
   --sep:rgba(255,236,210,.1); --nav:rgba(21,19,15,.74);
   --tint:#E2AC72; --tint-soft:#372B1F;
-  --green:#4ACB78; --tax:#F09B6D;
+  --green:#4ACB78; --tax:#F09B6D; --red:#FF5F52;
   --shadow:0 1px 2px rgba(0,0,0,.3),0 6px 20px -10px rgba(0,0,0,.5);
   --thumb:#5A534A; --knob:#F4EFE7;
   color-scheme:dark;
@@ -91,8 +91,8 @@ button{cursor:pointer;touch-action:manipulation}
 .today{border:0;background:transparent;color:var(--tint);font-weight:500;font-size:.9375rem;padding:0 10px;height:40px;border-radius:20px}
 .today:active{background:var(--tint-soft)}
 
-.seg{margin:8px 16px 0;display:grid;grid-template-columns:1fr 1fr;background:var(--fill);border-radius:10px;padding:2px;position:relative}
-.seg .thumb{position:absolute;top:2px;bottom:2px;left:2px;width:calc(50% - 2px);background:var(--thumb);border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06);transform:translateX(calc(var(--i,0) * 100%));transition:transform .32s cubic-bezier(.3,.9,.3,1)}
+.seg{margin:8px 16px 0;display:grid;grid-template-columns:1fr 1fr 1fr;background:var(--fill);border-radius:10px;padding:2px;position:relative}
+.seg .thumb{position:absolute;top:2px;bottom:2px;left:2px;width:calc((100% - 4px) / 3);background:var(--thumb);border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.08),0 1px 1px rgba(0,0,0,.06);transform:translateX(calc(var(--i,0) * 100%));transition:transform .32s cubic-bezier(.3,.9,.3,1)}
 .seg button{position:relative;z-index:1;border:0;background:transparent;height:34px;font-size:.9375rem;font-weight:500;color:var(--label);border-radius:8px}
 .seg button[aria-pressed="true"]{font-weight:600}
 .seg button:active{opacity:.6}
@@ -147,7 +147,7 @@ button{cursor:pointer;touch-action:manipulation}
 .tbl th:first-child,.tbl td:first-child{text-align:left;padding-left:16px}
 .tbl thead th{border-top:0;font-size:.75rem;font-weight:500;letter-spacing:.02em;text-transform:uppercase;color:var(--label-3);padding-top:12px;padding-bottom:6px}
 .tbl tbody th{font-weight:500}
-.tbl tbody th small{display:block;color:var(--label-2);font-weight:400;font-size:.75rem}
+.tbl tbody th small{display:block;color:var(--label-2);font-weight:400;font-size:.75rem;white-space:normal;max-width:14ch}
 .tbl td.t{color:var(--tax)} .tbl td.n{color:var(--green);font-weight:600}
 
 .prose{padding:14px 16px;display:grid;gap:10px;font-size:.9375rem;line-height:1.5;max-width:65ch}
@@ -162,6 +162,75 @@ details.how summary::after{content:"\203A";color:var(--label-3);font-size:1.4rem
 details.how[open] summary::after{transform:rotate(90deg)}
 details.how ul{margin:0;padding:0 16px 16px 34px;display:grid;gap:8px;font-size:.875rem;color:var(--label-2);line-height:1.5}
 details.how a{color:var(--tint)}
+
+/* calendar (Dia a dia) */
+.cal{padding:10px 12px 4px}
+.cal-dow,.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+.cal-dow span{text-align:center;font-size:.6875rem;font-weight:600;letter-spacing:.04em;color:var(--label-3);padding:4px 0 6px}
+.cal-dow span:nth-child(n+6){color:var(--label-3);opacity:.75}
+.day{border:0;background:transparent;border-radius:12px;height:56px;display:grid;grid-template-rows:30px 16px;justify-items:center;align-content:center;padding:0;position:relative;transition:transform .1s ease-out,background .15s}
+.day:active{transform:scale(.92)}
+.day .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:1.0625rem;font-variant-numeric:tabular-nums;font-weight:400}
+.day .hrs{font-size:.6875rem;font-weight:600;color:var(--green);font-variant-numeric:tabular-nums;line-height:16px}
+.day.worked{background:var(--fill)}
+.day.out{opacity:.32;pointer-events:none}
+.day.weekend .n{color:var(--label-2)}
+.day.today .n{background:var(--red);color:#fff;font-weight:600}
+.day.sel{box-shadow:inset 0 0 0 2px var(--label)}
+.day.sel.today{box-shadow:inset 0 0 0 2px var(--red)}
+.day-edit{margin:8px 4px 4px;padding:12px;border-radius:14px;background:var(--fill);display:grid;gap:10px}
+.day-edit .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.day-edit .top b{display:block;font-weight:600}
+.day-edit .top small{color:var(--label-2);font-size:.8125rem}
+.day-edit .mini{background:var(--card)}
+.day-edit .chips{display:flex;gap:6px;flex-wrap:wrap}
+.day-edit .chip{background:var(--card)}
+.day-edit .chip[aria-pressed="true"]{background:var(--tint);color:var(--card)}
+.day-edit .chip.ghost{background:transparent;color:var(--tint)}
+.cal-help{margin:6px 8px 2px;font-size:.8125rem;color:var(--label-2)}
+
+/* widgets */
+.widgets{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);grid-template-areas:"hoje calc" "mes calc";gap:16px}
+.widget{border-radius:24px;padding:16px;background:var(--card);box-shadow:var(--shadow);display:grid;align-content:start;gap:4px;min-width:0}
+.w-hoje{grid-area:hoje}.w-mes{grid-area:mes}.w-calc{grid-area:calc}
+.w-eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--label-2)}
+.w-hoje .dow{color:var(--red)}
+.w-hoje .date{font-family:var(--round);font-size:2.75rem;font-weight:500;line-height:1;letter-spacing:-.02em;margin:2px 0 8px}
+.w-big{font-family:var(--round);font-size:1.5rem;font-weight:600;color:var(--green);letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1.15}
+.w-sub{font-size:.8125rem;color:var(--label-2);font-variant-numeric:tabular-nums}
+.bars{display:flex;align-items:flex-end;gap:6px;height:56px;margin-top:10px}
+.bars i{flex:1;border-radius:5px 5px 2px 2px;background:var(--green);min-height:3px;opacity:.9;transition:height .3s cubic-bezier(.3,.9,.3,1)}
+.bars i.zero{background:var(--fill-2)}
+.bar-labels{display:flex;gap:6px}
+.bar-labels span{flex:1;text-align:center;font-size:.625rem;color:var(--label-3);font-variant-numeric:tabular-nums}
+
+/* calculator: committed dark Apple look in both themes */
+.w-calc{background:#1C1A17;color:#FFFFFF;padding:14px;gap:10px}
+.calc-disp{display:grid;justify-items:end;gap:2px;padding:4px 6px 0;min-height:88px;align-content:end}
+.calc-disp .expr{font-size:.8125rem;color:#A39C92;min-height:1.1em;font-variant-numeric:tabular-nums}
+.calc-disp .val{font-family:var(--round);font-weight:300;font-size:3rem;line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums;white-space:nowrap;max-width:100%;overflow:hidden}
+.calc-hint{font-size:.8125rem;color:#9BD8A9;text-align:right;padding:0 6px;min-height:1.2em;font-variant-numeric:tabular-nums}
+.calc-util{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.calc-util button{border:0;border-radius:12px;height:36px;background:#34302B;color:#FFD9A8;font-size:.875rem;font-weight:600;transition:transform .1s ease-out,background .12s}
+.calc-util button:active{transform:scale(.96);background:#4A443D}
+.keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.key{border:0;aspect-ratio:1;border-radius:50%;font-size:1.625rem;font-weight:400;font-family:var(--sys);background:#3A3632;color:#fff;display:grid;place-items:center;transition:transform .08s ease-out,filter .12s;max-width:100%}
+.key:active{filter:brightness(1.45);transform:scale(.95)}
+.key.fn{background:#A8A29A;color:#111;font-size:1.25rem;font-weight:500}
+.key.op{background:#FF9F0A;color:#fff;font-size:1.875rem}
+.key.op.on{background:#fff;color:#FF9F0A}
+.key.zero{grid-column:span 2;aspect-ratio:auto;border-radius:999px;justify-content:start;padding-left:30%}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;background:rgba(30,27,23,.88);color:#fff;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);padding:10px 16px;border-radius:14px;font-size:.875rem;font-weight:500;pointer-events:none;transition:opacity .2s ease,transform .3s cubic-bezier(.3,.9,.3,1);z-index:30;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:560px){
+  .widgets{grid-template-columns:1fr 1fr;grid-template-areas:"hoje mes" "calc calc";gap:12px}
+  .widget{border-radius:22px;padding:14px}
+  .w-hoje .date{font-size:2.25rem}
+  .w-big{font-size:1.25rem}
+  .day{height:52px}
+}
 
 @media (max-width:420px){
   .page{padding-inline:16px}
@@ -205,6 +274,7 @@ details.how a{color:var(--tint)}
 
     <div class="seg" id="seg" role="group" aria-label="Como informar as horas">
       <span class="thumb" aria-hidden="true"></span>
+      <button type="button" data-mode="day" aria-pressed="false">Dia a dia</button>
       <button type="button" data-mode="week" aria-pressed="true">Por semana</button>
       <button type="button" data-mode="month" aria-pressed="false">No mês</button>
     </div>
@@ -217,6 +287,31 @@ details.how a{color:var(--tint)}
         <button type="button" class="step" data-big="1" aria-label="Mais 1 hora">+</button>
       </div>
       <div class="quick" id="quick"></div>
+    </div>
+
+    <div id="calWrap" class="cal" hidden>
+      <div class="cal-dow" aria-hidden="true"><span>S</span><span>T</span><span>Q</span><span>Q</span><span>S</span><span>S</span><span>D</span></div>
+      <div class="cal-grid" id="calGrid" role="group" aria-label="Dias do mês"></div>
+      <p class="cal-help" id="calHelp">Toque num dia e escolha as horas. "Repetir" preenche o mesmo dia da semana no mês inteiro.</p>
+      <div class="day-edit">
+        <div class="top">
+          <span><b id="dayTitle">Dia</b><small id="daySub">Folga</small></span>
+          <div class="mini">
+            <button type="button" data-dstep="-1" aria-label="Menos meia hora">&minus;</button>
+            <input id="dayHours" type="text" inputmode="decimal" autocomplete="off" aria-label="Horas no dia selecionado">
+            <em>h</em>
+            <button type="button" data-dstep="1" aria-label="Mais meia hora">+</button>
+          </div>
+        </div>
+        <div class="chips" id="dayChips">
+          <button type="button" class="chip" data-dh="0">Folga</button>
+          <button type="button" class="chip" data-dh="4">4 h</button>
+          <button type="button" class="chip" data-dh="6">6 h</button>
+          <button type="button" class="chip" data-dh="8">8 h</button>
+          <button type="button" class="chip ghost" id="repeatDow">Repetir</button>
+          <button type="button" class="chip ghost" id="clearMonth">Limpar mês</button>
+        </div>
+      </div>
     </div>
 
     <div id="variedWrap">
@@ -241,6 +336,54 @@ details.how a{color:var(--tint)}
     </div>
   </section>
 
+  <section class="section" aria-label="Widgets">
+    <div class="sec-head">Widgets</div>
+    <div class="widgets">
+      <div class="widget w-hoje">
+        <span class="w-eyebrow dow" id="wDow">hoje</span>
+        <span class="date" id="wDate">15</span>
+        <span class="w-big" id="wTodayNet">€ 0,00</span>
+        <span class="w-sub" id="wTodaySub">&nbsp;</span>
+      </div>
+      <div class="widget w-mes">
+        <span class="w-eyebrow" id="wMonth">Mês</span>
+        <span class="w-big" id="wMonthNet">€ 0,00</span>
+        <span class="w-sub" id="wMonthSub">&nbsp;</span>
+        <div class="bars" id="wBars" aria-hidden="true"></div>
+        <div class="bar-labels" id="wBarLabels" aria-hidden="true"></div>
+      </div>
+      <div class="widget w-calc" id="calcW" tabindex="0" aria-label="Calculadora">
+        <div class="calc-disp" aria-live="polite"><span class="expr" id="calcExpr"></span><span class="val" id="calcVal">0</span></div>
+        <div class="calc-hint" id="calcHint"></div>
+        <div class="calc-util">
+          <button type="button" id="calcRate">× € 14,99</button>
+          <button type="button" id="calcUse">Usar como horas</button>
+        </div>
+        <div class="keys" id="keys">
+          <button type="button" class="key fn" data-k="AC" id="calcClear">AC</button>
+          <button type="button" class="key fn" data-k="±" aria-label="Trocar sinal">±</button>
+          <button type="button" class="key fn" data-k="%">%</button>
+          <button type="button" class="key op" data-k="÷" aria-label="Dividir">÷</button>
+          <button type="button" class="key" data-k="7">7</button>
+          <button type="button" class="key" data-k="8">8</button>
+          <button type="button" class="key" data-k="9">9</button>
+          <button type="button" class="key op" data-k="×" aria-label="Multiplicar">×</button>
+          <button type="button" class="key" data-k="4">4</button>
+          <button type="button" class="key" data-k="5">5</button>
+          <button type="button" class="key" data-k="6">6</button>
+          <button type="button" class="key op" data-k="−" aria-label="Subtrair">−</button>
+          <button type="button" class="key" data-k="1">1</button>
+          <button type="button" class="key" data-k="2">2</button>
+          <button type="button" class="key" data-k="3">3</button>
+          <button type="button" class="key op" data-k="+" aria-label="Somar">+</button>
+          <button type="button" class="key zero" data-k="0">0</button>
+          <button type="button" class="key" data-k="," aria-label="Vírgula">,</button>
+          <button type="button" class="key op" data-k="=" aria-label="Igual">=</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="sec-head">Antes e depois do desconto</div>
     <div class="group">
@@ -248,7 +391,7 @@ details.how a{color:var(--tint)}
         <thead><tr><th scope="col"></th><th scope="col">Bruto</th><th scope="col">Desconto</th><th scope="col">Líquido</th></tr></thead>
         <tbody id="rates"></tbody>
       </table>
-      <div class="row">
+      <div class="row" id="daysRow">
         <span class="l">Dias trabalhados por semana<small>Usado para o valor por dia</small></span>
         <div class="mini">
           <button type="button" data-days="-1" aria-label="Menos 1 dia">&minus;</button>
@@ -307,13 +450,14 @@ details.how a{color:var(--tint)}
     <summary>Como a conta é feita</summary>
     <ul>
       <li>Mesmo método do thetax.nl. Por semana: o bruto da semana é projetado para o ano (× 52), o imposto do ano é calculado e dividido por 52. No mês: o bruto do mês é projetado × 12 e dividido por 12.</li>
-      <li>Por semana, o mês soma as semanas que começam nele (segunda-feira). No modo mês, a média semanal usa 4,33 semanas por mês (52 ÷ 12).</li>
+      <li>Dia a dia: as horas de cada semana (segunda a domingo) são somadas e calculadas como semana; se a semana cruza dois meses, cada mês fica com a parte das horas que caiu nele. Por semana, o mês soma as semanas que começam nele (segunda-feira). No modo mês, a média semanal usa 4,33 semanas por mês (52 ÷ 12).</li>
       <li>Pensão PH&amp;C 2026: 8,4% de pensão + 0,17% de pensão para dependentes, sobre o salário acima da franquia de € 15.308 por ano. A conta divide a franquia por hora considerando jornada cheia de 38 h; isso é uma estimativa, o valor exato aparece no holerite. A pensão sai antes do imposto.</li>
       <li>O holerite real pode variar alguns euros, porque o empregador usa a tabela do período de pagamento. O acerto final acontece na declaração anual (aangifte).</li>
       <li>Fontes: motor de cálculo do <a href="https://thetax.nl" target="_blank" rel="noopener">thetax.nl</a> (código aberto, MIT, Stepan Suvorov); <a href="https://www.belastingdienst.nl/wps/wcm/connect/nl/voorlopige-aanslag/content/voorlopige-aanslag-tarieven-en-heffingskortingen" target="_blank" rel="noopener">tarifas e créditos 2026, Belastingdienst</a>; <a href="https://maqqie.nl/kennisbank/arbeidsrecht-en-wetgeving/horeca-pensioen-2025-alles-wat-je-moet-weten" target="_blank" rel="noopener">pensão horeca 2026, Maqqie</a>; <a href="https://www.zorgwijzer.nl/zorgverzekering-2026/zorgverzekering-2026-alle-premies-bekend-overzicht" target="_blank" rel="noopener">prêmios do seguro saúde 2026, Zorgwijzer</a>.</li>
     </ul>
   </details>
 </main>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 const constants = {"workingWeeks":52,"workingDays":255,"payrollTax":{"2025":[{"bracket":1,"min":0,"max":38441,"rate":0.0817},{"bracket":2,"min":38442,"max":76817,"rate":0.3748},{"bracket":3,"min":76818,"rate":0.495}],"2026":[{"bracket":1,"min":0,"max":38883,"rate":0.081},{"bracket":2,"min":38884,"max":78426,"rate":0.3756},{"bracket":3,"min":78427,"rate":0.495}]},"socialPercent":{"2025":[{"bracket":1,"min":0,"max":38440,"rate":0.3582,"social":0.2765,"older":0.0975}],"2026":[{"bracket":1,"min":0,"max":38882,"rate":0.3575,"social":0.2765,"older":0.0975}]},"generalCredit":{"2025":[{"bracket":1,"min":0,"max":28407,"rate":3068},{"bracket":2,"min":28407,"max":76817,"rate":-0.06337},{"bracket":3,"min":76818,"rate":0}],"2026":[{"bracket":1,"min":0,"max":29737,"rate":3115},{"bracket":2,"min":29737,"max":78426,"rate":-0.06398},{"bracket":3,"min":78427,"rate":0}]},"labourCredit":{"2025":[{"bracket":1,"min":0,"max":12169,"rate":0.08053},{"bracket":2,"min":12169,"max":26288,"rate":0.3003},{"bracket":3,"min":26288,"max":43071,"rate":0.02258},{"bracket":4,"min":43071,"max":129078,"rate":-0.0651},{"bracket":5,"min":129078,"rate":0}],"2026":[{"bracket":1,"min":0,"max":11965,"rate":0.08324},{"bracket":2,"min":11965,"max":25845,"rate":0.31009},{"bracket":3,"min":25845,"max":45592,"rate":0.0195},{"bracket":4,"min":45592,"max":132948,"rate":-0.0651},{"bracket":5,"min":132948,"rate":0}]},"lowWageThreshold":{"2025":8566,"2026":8714},"elderCredit":{"2025":[{"bracket":1,"min":0,"max":45308,"rate":2035},{"bracket":2,"min":45308,"max":58875,"rate":-0.15},{"bracket":3,"min":58875,"rate":0}],"2026":[{"bracket":1,"min":0,"max":46002,"rate":2067},{"bracket":2,"min":46002,"max":59782,"rate":-0.15},{"bracket":3,"min":59782,"rate":0}]}};
@@ -393,7 +537,18 @@ const showNum = (n) => String(Math.round((n || 0) * 100) / 100).replace('.', ','
 const pad = (n) => String(n).padStart(2, '0');
 const YEARS = Object.keys(constants.payrollTax).map(Number).sort();
 const taxYearFor = (y) => Math.min(Math.max(y, YEARS[0]), YEARS[YEARS.length - 1]);
-const clampH = (h) => Math.min(168, Math.max(0, Math.round(h * 100) / 100));
+const clampH = (h, max = 168) => Math.min(max, Math.max(0, Math.round(h * 100) / 100));
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const dkey = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const addDays = (d, n) => new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+const mondayOf = (d) => addDays(d, -((d.getDay() + 6) % 7));
+const fromKey = (k) => { const [y, m, d] = k.split('-').map(Number); return new Date(y, m - 1, d); };
+const fmtMonth = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' });
+const fmtMonthOnly = new Intl.DateTimeFormat('pt-BR', { month: 'long' });
+const fmtShort = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' });
+const fmtLongDay = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+const fmtDow = new Intl.DateTimeFormat('pt-BR', { weekday: 'long' });
+const fmtDowShort = new Intl.DateTimeFormat('pt-BR', { weekday: 'short' });
 
 function isoWeek(d) {
   const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -401,14 +556,12 @@ function isoWeek(d) {
   const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
   return Math.ceil(((t - y0) / 86400000 + 1) / 7);
 }
-const shortDate = new Intl.DateTimeFormat('pt-BR', { day: 'numeric', month: 'short' });
 function weeksOf(y, m) {
   const out = []; const last = new Date(y, m + 1, 0).getDate();
   for (let d = 1; d <= last; d++) {
     const date = new Date(y, m, d);
     if (date.getDay() !== 1) continue;
-    const end = new Date(y, m, d + 6);
-    out.push({ key: `${y}-${pad(m + 1)}-${pad(d)}`, wk: isoWeek(date), label: `${date.getDate()} a ${shortDate.format(end).replace('.', '')}` });
+    out.push({ key: dkey(date), wk: isoWeek(date), label: `${date.getDate()} a ${fmtShort.format(addDays(date, 6)).replace('.', '')}` });
   }
   return out;
 }
@@ -416,19 +569,21 @@ function weeksOf(y, m) {
 /* ---- state ---- */
 const STORE_KEY = 'loonstrook-v1';
 const now = new Date();
+const todayKey = dkey(now);
 let view = { y: now.getFullYear(), m: now.getMonth() };
+let sel = todayKey;
 const mKey = () => `${view.y}-${pad(view.m + 1)}`;
 
 function freshState() {
-  return { v: 2, mode: 'week', weekHours: 24, varied: {}, weeks: {}, monthHours: {}, days: 4, korting: true, pension: false };
+  return { v: 3, mode: 'week', weekHours: 24, varied: {}, weeks: {}, monthHours: {}, dayHours: {}, days: 4, korting: true, pension: false };
 }
 function normalize(s) {
   const d = freshState();
   if (!s || typeof s !== 'object') return d;
-  if (s.v === 2) {
-    return { ...d, ...s, varied: { ...(s.varied || {}) }, weeks: { ...(s.weeks || {}) }, monthHours: { ...(s.monthHours || {}) } };
+  if (s.v === 2 || s.v === 3) {
+    return { ...d, ...s, v: 3, varied: { ...(s.varied || {}) }, weeks: { ...(s.weeks || {}) }, monthHours: { ...(s.monthHours || {}) }, dayHours: { ...(s.dayHours || {}) } };
   }
-  if (s.v === 1) { // migrate first version (hours per week, per month)
+  if (s.v === 1) {
     const out = d;
     if (s.settings) { out.days = s.settings.defDays || 4; out.korting = s.settings.korting !== false; }
     let first = 0;
@@ -445,7 +600,7 @@ function normalize(s) {
 let state;
 try { const raw = localStorage.getItem(STORE_KEY); state = raw ? normalize(JSON.parse(raw)) : freshState(); } catch (e) { state = freshState(); }
 
-/* ---- persistence: browser + artifact database ---- */
+/* ---- persistence: browser + artifact database (when available) ---- */
 let dbRef = null, saveTimer = null, writeChain = Promise.resolve(), lastSynced = '';
 function setSync(kind) {
   $('sync').dataset.state = kind;
@@ -476,25 +631,26 @@ function persist() {
       const incoming = JSON.stringify(snap.data());
       if (incoming === lastSynced) { setSync('cloud'); return; }
       lastSynced = incoming;
-      const wasV1 = snap.data().v !== 2;
+      const outdated = snap.data().v !== 3;
       state = normalize(snap.data());
       try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
       setSync('cloud');
       renderAll();
-      if (wasV1) persist();
+      if (outdated) persist();
     }, () => setSync('local'));
   } catch (e) {}
 })();
 
 /* ---- calculation ---- */
-function pensionFor(hours) {
-  return state.pension ? PENSION_RATE * Math.max(0, hours * (RATE - PENSION_FRANCHISE_HOUR)) : 0;
-}
+const KEYS = ['hours', 'gross', 'pension', 'taxable', 'tax', 'net', 'payroll', 'social', 'general', 'labour'];
+const ZERO = () => Object.fromEntries(KEYS.map((k) => [k, 0]));
+const add = (a, b) => { for (const k of KEYS) a[k] = (a[k] || 0) + (b[k] || 0); return a; };
+const scale = (a, f) => { const o = {}; for (const k of KEYS) o[k] = (a[k] || 0) * f; return o; };
+
 function period(hours, kind, year, withPension = state.pension) {
   const gross = hours * RATE;
   const pension = withPension ? PENSION_RATE * Math.max(0, hours * (RATE - PENSION_FRANCHISE_HOUR)) : 0;
-  const z = { hours, gross, pension, taxable: 0, tax: 0, net: 0, payroll: 0, social: 0, general: 0, labour: 0 };
-  if (gross <= 0) return z;
+  if (gross <= 0) return { ...ZERO(), hours };
   const taxable = gross - pension;
   const p = new SalaryPaycheck({ income: taxable, allowance: false, socialSecurity: true, older: false, hours: 40 }, kind, year);
   const div = kind === 'Week' ? constants.workingWeeks : 12;
@@ -506,59 +662,115 @@ function period(hours, kind, year, withPension = state.pension) {
     general: state.korting ? p.generalCredit / div : 0, labour: state.korting ? p.labourCredit / div : 0,
   };
 }
-const KEYS = ['hours', 'gross', 'pension', 'taxable', 'tax', 'net', 'payroll', 'social', 'general', 'labour'];
-const add = (a, b) => { for (const k of KEYS) a[k] = (a[k] || 0) + (b[k] || 0); return a; };
-const scale = (a, f) => { const o = {}; for (const k of KEYS) o[k] = (a[k] || 0) * f; return o; };
+
+/* one calendar week (Mon-Sun) from day entries; share of it that falls inside month m */
+function dayWeek(monday, y, m, withPension) {
+  let total = 0, inMonth = 0, daysIn = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(monday, i); const h = state.dayHours[dkey(d)] || 0;
+    total += h;
+    if (m == null || (d.getMonth() === m && d.getFullYear() === y)) { inMonth += h; if (h > 0) daysIn++; }
+  }
+  const full = total > 0 ? period(total, 'Week', taxYearFor(monday.getFullYear()), withPension) : ZERO();
+  const share = total > 0 ? scale(full, inMonth / total) : ZERO();
+  return { total, inMonth, daysIn, full, share };
+}
+function dayNet(key) {
+  const d = fromKey(key); const h = state.dayHours[key] || 0;
+  if (!h) return 0;
+  const w = dayWeek(mondayOf(d), null, null, state.pension);
+  return w.full.net * h / w.total;
+}
 
 function computeMonth(withPension) {
   const year = taxYearFor(view.y);
-  const weeks = weeksOf(view.y, view.m);
   const key = mKey();
-  if (state.mode === 'month') {
-    const H = state.monthHours[key] ?? Math.round(state.weekHours * weeks.length * 100) / 100;
-    const saved = state.pension; state.pension = withPension;
-    const mo = period(H, 'Month', year);
-    state.pension = saved;
-    return { mode: 'month', weeksCount: WEEKS_PER_MONTH, worked: H > 0 ? WEEKS_PER_MONTH : 0, month: mo, week: scale(mo, 1 / WEEKS_PER_MONTH), days: H > 0 ? state.days * WEEKS_PER_MONTH : 0, perWeek: [] };
-  }
-  const varied = !!state.varied[key];
-  const month = {}; let worked = 0; const perWeek = [];
   const saved = state.pension; state.pension = withPension;
-  for (const w of weeks) {
-    const h = varied ? (state.weeks[w.key] ?? state.weekHours) : state.weekHours;
-    const r = period(h, 'Week', year);
-    perWeek.push({ w, r });
-    add(month, r); if (h > 0) worked++;
-  }
-  state.pension = saved;
-  for (const k of KEYS) month[k] = month[k] || 0;
-  const week = worked ? scale(month, 1 / worked) : scale(month, 0);
-  return { mode: 'week', varied, weeksCount: weeks.length, worked, month, week, days: worked * state.days, perWeek };
+  try {
+    if (state.mode === 'month') {
+      const weeks = weeksOf(view.y, view.m);
+      const H = state.monthHours[key] ?? Math.round(state.weekHours * weeks.length * 100) / 100;
+      const mo = period(H, 'Month', year);
+      return { mode: 'month', weeksCount: WEEKS_PER_MONTH, worked: H > 0 ? WEEKS_PER_MONTH : 0, month: mo, week: scale(mo, 1 / WEEKS_PER_MONTH), days: H > 0 ? state.days * WEEKS_PER_MONTH : 0, perWeek: [] };
+    }
+    if (state.mode === 'day') {
+      const month = ZERO(); const perWeek = []; let worked = 0, days = 0;
+      const last = new Date(view.y, view.m + 1, 0);
+      for (let ws = mondayOf(new Date(view.y, view.m, 1)); ws <= last; ws = addDays(ws, 7)) {
+        const w = dayWeek(ws, view.y, view.m, withPension);
+        add(month, w.share); days += w.daysIn; if (w.inMonth > 0) worked++;
+        const end = addDays(ws, 6);
+        perWeek.push({ w: { key: dkey(ws), wk: isoWeek(ws), label: `${fmtShort.format(ws).replace('.', '')} a ${fmtShort.format(end).replace('.', '')}` }, r: w.share, total: w.total });
+      }
+      return { mode: 'day', weeksCount: perWeek.length, worked, month, week: worked ? scale(month, 1 / worked) : ZERO(), days, perWeek };
+    }
+    const weeks = weeksOf(view.y, view.m);
+    const varied = !!state.varied[key];
+    const month = ZERO(); let worked = 0; const perWeek = [];
+    for (const w of weeks) {
+      const h = varied ? (state.weeks[w.key] ?? state.weekHours) : state.weekHours;
+      const r = period(h, 'Week', year);
+      perWeek.push({ w, r }); add(month, r); if (h > 0) worked++;
+    }
+    return { mode: 'week', varied, weeksCount: weeks.length, worked, month, week: worked ? scale(month, 1 / worked) : ZERO(), days: worked * state.days, perWeek };
+  } finally { state.pension = saved; }
+}
+
+/* ---- toast ---- */
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
 }
 
 /* ---- rendering ---- */
-const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+function renderCalendar() {
+  const first = new Date(view.y, view.m, 1);
+  const last = new Date(view.y, view.m + 1, 0);
+  const start = mondayOf(first);
+  const end = addDays(mondayOf(last), 6);
+  if (fromKey(sel).getMonth() !== view.m || fromKey(sel).getFullYear() !== view.y) sel = (todayKey.startsWith(mKey()) ? todayKey : dkey(first));
+  let html = '';
+  for (let d = start; d <= end; d = addDays(d, 1)) {
+    const k = dkey(d); const h = state.dayHours[k] || 0;
+    const out = d.getMonth() !== view.m;
+    const cls = ['day', out ? 'out' : '', h > 0 ? 'worked' : '', k === todayKey ? 'today' : '', k === sel && !out ? 'sel' : '', d.getDay() === 0 || d.getDay() === 6 ? 'weekend' : ''].join(' ');
+    const label = `${fmtLongDay.format(d)}, ${h > 0 ? dec.format(h) + ' horas' : 'sem horas'}`;
+    html += `<button type="button" class="${cls}" data-day="${k}" aria-label="${label}" aria-pressed="${k === sel}" ${out ? 'tabindex="-1"' : ''}><span class="n">${d.getDate()}</span><span class="hrs">${h > 0 ? dec.format(h) + 'h' : ''}</span></button>`;
+  }
+  $('calGrid').innerHTML = html;
+  const sd = fromKey(sel); const sh = state.dayHours[sel] || 0;
+  $('dayTitle').textContent = cap(fmtLongDay.format(sd));
+  $('daySub').textContent = sh > 0 ? `${fmt(sh * RATE)} bruto · ${fmt(dayNet(sel))} líquido` : 'Folga';
+  if (document.activeElement !== $('dayHours')) $('dayHours').value = showNum(sh);
+  $('dayChips').querySelectorAll('[data-dh]').forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.dh) === sh)));
+  $('repeatDow').textContent = `Repetir ${sd.getDay() === 0 || sd.getDay() === 6 ? 'todo' : 'toda'} ${fmtDow.format(sd).replace('-feira', '')}`;
+  const anyInMonth = Object.keys(state.dayHours).some((k) => k.startsWith(mKey()) && state.dayHours[k] > 0);
+  $('calHelp').hidden = anyInMonth;
+}
+
 function renderAll() {
   const key = mKey();
-  const monthName = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(new Date(view.y, view.m, 1));
+  const monthName = fmtMonth.format(new Date(view.y, view.m, 1));
   $('monthLabel').textContent = cap(monthName);
   $('taxYear').textContent = taxYearFor(view.y);
 
   const mode = state.mode;
-  const seg = $('seg');
-  seg.style.setProperty('--i', mode === 'month' ? 1 : 0);
-  seg.querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+  const idx = { day: 0, week: 1, month: 2 }[mode];
+  $('seg').style.setProperty('--i', idx);
+  $('seg').querySelectorAll('button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
 
   const weeks = weeksOf(view.y, view.m);
   const varied = mode === 'week' && !!state.varied[key];
+  $('calWrap').hidden = mode !== 'day';
   $('variedWrap').hidden = mode !== 'week';
+  $('entry').hidden = mode === 'day' || varied;
   $('varied').checked = varied;
-  $('entry').hidden = varied;
   $('weeks').hidden = !varied;
+  $('daysRow').hidden = mode === 'day';
   $('bigCap').textContent = mode === 'month' ? 'Horas trabalhadas no mês' : 'Horas trabalhadas por semana';
   const bigVal = mode === 'month' ? (state.monthHours[key] ?? state.weekHours * weeks.length) : state.weekHours;
   if (document.activeElement !== $('bigHours')) $('bigHours').value = showNum(bigVal);
-
   const presets = mode === 'month' ? [64, 80, 96, 120, 160] : [16, 20, 24, 32, 40];
   $('quick').innerHTML = presets.map((p) => `<button type="button" class="chip" data-preset="${p}" aria-pressed="${p === bigVal}">${p} h</button>`).join('');
 
@@ -577,14 +789,12 @@ function renderAll() {
         </div>
       </div>`).join('');
   }
-  weeks.forEach((w) => {
-    const inp = $('w-' + w.key);
-    if (inp && document.activeElement !== inp) inp.value = showNum(state.weeks[w.key] ?? state.weekHours);
-  });
-  $('variedSub').textContent = `${weeks.length} semanas começam em ${monthName.split(' ')[0]}`;
+  weeks.forEach((w) => { const inp = $('w-' + w.key); if (inp && document.activeElement !== inp) inp.value = showNum(state.weeks[w.key] ?? state.weekHours); });
+  $('variedSub').textContent = `${weeks.length} semanas começam em ${fmtMonthOnly.format(new Date(view.y, view.m, 1))}`;
   if (document.activeElement !== $('days')) $('days').value = showNum(state.days);
   $('korting').checked = !!state.korting;
   $('pension').checked = !!state.pension;
+  if (mode === 'day') renderCalendar();
   compute();
 }
 
@@ -592,40 +802,36 @@ function compute() {
   const R = computeMonth(state.pension);
   const other = computeMonth(!state.pension);
   const { month: M, week: W } = R;
-  const monthShort = cap(new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(new Date(view.y, view.m, 1)));
+  const monthShort = cap(fmtMonthOnly.format(new Date(view.y, view.m, 1)));
+  const div = (a, b) => (b > 0 ? a / b : 0);
 
   // hero
-  const weekLabel = R.mode === 'month' ? 'Média por semana' : (R.varied ? 'Média por semana' : 'Semana');
-  $('wkLabel').firstChild.nodeValue = weekLabel;
-  $('wkHint').textContent = `${dec.format(W.hours)} h × ${fmt(RATE)}`;
+  $('wkLabel').firstChild.nodeValue = (R.mode === 'week' && !R.varied) ? 'Semana' : 'Média por semana';
+  $('wkHint').textContent = R.mode === 'day' ? `${dec.format(W.hours)} h em média nas semanas com horas` : `${dec.format(W.hours)} h × ${fmt(RATE)}`;
   $('wkNet').textContent = fmt(W.net);
   $('wkGross').textContent = fmt(W.gross);
   $('wkTax').textContent = fmt(W.tax + W.pension);
   $('moLabel').firstChild.nodeValue = monthShort;
-  $('moHint').textContent = R.mode === 'month'
-    ? `${dec.format(M.hours)} h no mês`
+  $('moHint').textContent = R.mode === 'month' ? `${dec.format(M.hours)} h no mês`
+    : R.mode === 'day' ? `${dec.format(M.hours)} h em ${R.days} ${R.days === 1 ? 'dia' : 'dias'}`
     : `${dec.format(M.hours)} h em ${R.weeksCount} semanas`;
   $('moNet').textContent = fmt(M.net);
   $('moGross').textContent = fmt(M.gross);
   $('moTax').textContent = fmt(M.tax);
   $('moPensionWrap').hidden = !state.pension;
   $('moPension').textContent = fmt(M.pension);
-  document.querySelectorAll('#quick .chip').forEach((c) => {
-    const key = mKey();
-    const v = state.mode === 'month' ? (state.monthHours[key] ?? state.weekHours * R.weeksCount) : state.weekHours;
-    c.setAttribute('aria-pressed', String(Number(c.dataset.preset) === v));
-  });
+  const bigVal = state.mode === 'month' ? (state.monthHours[mKey()] ?? state.weekHours * weeksOf(view.y, view.m).length) : state.weekHours;
+  document.querySelectorAll('#quick .chip').forEach((c) => c.setAttribute('aria-pressed', String(Number(c.dataset.preset) === bigVal)));
 
   // rates table
   const ded = (x) => x.tax + x.pension;
-  const div = (a, b) => (b > 0 ? a / b : 0);
   const line = (label, sub, n) => `<tr><th scope="row">${label}${sub ? `<small>${sub}</small>` : ''}</th>
     <td>${fmt(div(M.gross, n))}</td><td class="t">${fmt(div(ded(M), n))}</td><td class="n">${fmt(div(M.net, n))}</td></tr>`;
   const weeksN = R.mode === 'month' ? WEEKS_PER_MONTH : R.worked;
   $('rates').innerHTML =
     line('Hora', '', M.hours) +
-    line('Dia', `${dec.format(div(W.hours, state.days))} h por dia`, R.days) +
-    line('Semana', R.mode === 'month' ? 'média de 4,33 por mês' : (R.varied ? 'média' : ''), weeksN) +
+    line('Dia', `${dec.format(div(M.hours, R.days))} h por dia${R.mode === 'day' ? ' em média' : ''}`, R.days) +
+    line('Semana', R.mode === 'month' ? 'média de 4,33 por mês' : (R.mode === 'week' && !R.varied ? '' : 'média'), weeksN) +
     line('Mês', monthShort.toLowerCase(), M.hours > 0 ? 1 : 0);
 
   // why
@@ -634,11 +840,10 @@ function compute() {
   const P = new SalaryPaycheck({ income: annualTaxable, allowance: false, socialSecurity: true, older: false, hours: 40 }, 'Year', year);
   const bp = constants.payrollTax[year][0].rate, bs = constants.socialPercent[year][0].social, b1 = constants.payrollTax[year][0].max;
   const eff = div(M.tax, M.gross);
-  const credits = P.labourCredit + P.generalCredit;
-  const cover = div(credits, -P.taxWithoutCredit);
+  const cover = div(P.labourCredit + P.generalCredit, -P.taxWithoutCredit);
   let html = '';
   if (M.gross <= 0) {
-    html = `<p>Coloque suas horas no painel acima para ver o desconto explicado.</p>`;
+    html = `<p>${R.mode === 'day' ? 'Toque nos dias do calendário e lance as horas' : 'Coloque suas horas no painel acima'} para ver o desconto explicado.</p>`;
   } else {
     html += `<p>Dos <b>${fmt(M.gross)}</b> brutos do mês, <b>${fmt(M.tax)}</b> ficam com a Belastingdienst. Isso é <b>${pct1.format(eff)}</b> do seu bruto, ou ${fmt(eff * 100)} a cada € 100. No holerite esse desconto aparece como <b>loonheffing</b>.</p>`;
     if (state.pension) html += `<p>Antes do imposto sai a pensão da horeca, <b>${fmt(M.pension)}</b> no mês. O imposto é calculado sobre o que sobra, por isso ele fica um pouco menor.</p>`;
@@ -660,7 +865,7 @@ function compute() {
 
   // other deductions
   const pensMonth = state.pension ? M.pension : other.month.pension;
-  const netDiff = state.pension ? other.month.net - M.net : M.net - other.month.net;
+  const netDiff = Math.abs(other.month.net - M.net);
   $('pensionTitle').textContent = state.pension ? 'Pensão no mês' : 'Se tiver pensão da horeca';
   $('pensionSub').textContent = state.pension
     ? `Já descontada nos totais. No líquido pesa ${fmt(netDiff)}, porque reduz o imposto.`
@@ -672,71 +877,221 @@ function compute() {
   // hours group
   const hr = (label, v, sub) => `<div class="row"><span class="l">${label}${sub ? `<small>${sub}</small>` : ''}</span><span class="v">${v}</span></div>`;
   let hg = hr('Total de horas no mês', `<b>${dec.format(M.hours)} h</b>`) +
-    hr('Dias trabalhados', `${R.mode === 'month' ? '≈ ' : ''}${dec.format(Math.round(R.days * 10) / 10)}`, `${dec.format(state.days)} por semana`) +
-    hr('Semanas', R.mode === 'month' ? '4,33' : String(R.weeksCount), R.mode === 'month' ? 'média de um mês (52 ÷ 12)' : 'semanas que começam neste mês');
-  if (R.mode === 'week' && R.varied) {
-    hg += R.perWeek.map(({ w, r: x }) => hr(`Semana ${w.wk}`, `${dec.format(x.hours)} h · <span class="plus">${fmt(x.net)}</span>`, w.label)).join('');
+    hr('Dias trabalhados', `${R.mode === 'month' ? '≈ ' : ''}${dec.format(Math.round(R.days * 10) / 10)}`, R.mode === 'day' ? 'dias com horas no calendário' : `${dec.format(state.days)} por semana`) +
+    hr('Semanas', R.mode === 'month' ? '4,33' : String(R.mode === 'day' ? R.worked : R.weeksCount), R.mode === 'month' ? 'média de um mês (52 ÷ 12)' : R.mode === 'day' ? 'semanas com horas neste mês' : 'semanas que começam neste mês');
+  if ((R.mode === 'week' && R.varied) || R.mode === 'day') {
+    hg += R.perWeek.filter(({ r: x }) => R.mode !== 'day' || x.hours > 0)
+      .map(({ w, r: x }) => hr(`Semana ${w.wk}`, `${dec.format(x.hours)} h · <span class="plus">${fmt(x.net)}</span>`, w.label)).join('');
   }
   $('hoursGroup').innerHTML = hg;
+
+  renderWidgets(R, monthShort);
+  if (state.mode === 'day') {
+    const sh = state.dayHours[sel] || 0;
+    $('daySub').textContent = sh > 0 ? `${fmt(sh * RATE)} bruto · ${fmt(dayNet(sel))} líquido` : 'Folga';
+  }
+  updateCalcHint();
 }
 
+function renderWidgets(R, monthShort) {
+  // Hoje
+  $('wDow').textContent = fmtDow.format(now).replace('-feira', '');
+  $('wDate').textContent = now.getDate();
+  const th = state.dayHours[todayKey] || 0;
+  if (state.mode === 'day') {
+    $('wTodayNet').textContent = th > 0 ? fmt(dayNet(todayKey)) : 'Folga';
+    $('wTodaySub').textContent = th > 0 ? `${dec.format(th)} h hoje · ${fmt(th * RATE)} bruto` : 'Nenhuma hora lançada hoje';
+  } else {
+    const typicalH = state.days > 0 ? state.weekHours / state.days : 0;
+    const wk = period(state.weekHours, 'Week', taxYearFor(now.getFullYear()));
+    $('wTodayNet').textContent = fmt(div0(wk.net, state.days));
+    $('wTodaySub').textContent = `dia típico: ${dec.format(typicalH)} h`;
+  }
+  // Mês
+  $('wMonth').textContent = monthShort;
+  $('wMonthNet').textContent = fmt(R.month.net);
+  $('wMonthSub').textContent = `${dec.format(R.month.hours)} h · ${pct1.format(div0(R.month.tax, R.month.gross))} de desconto`;
+  let vals, labels;
+  if (R.mode === 'month') { vals = [0, 1, 2, 3].map(() => R.week.net); labels = ['S1', 'S2', 'S3', 'S4']; }
+  else { vals = R.perWeek.map((p) => p.r.net); labels = R.perWeek.map((p) => 'S' + p.w.wk); }
+  const max = Math.max(1, ...vals);
+  $('wBars').innerHTML = vals.map((v) => `<i class="${v > 0 ? '' : 'zero'}" style="height:${Math.max(6, v / max * 100)}%" title="${fmt(v)}"></i>`).join('');
+  $('wBarLabels').innerHTML = labels.map((l) => `<span>${l}</span>`).join('');
+}
+const div0 = (a, b) => (b > 0 ? a / b : 0);
+
+/* ---- calculator ---- */
+const calc = { cur: '0', prev: null, op: null, fresh: true, lastOp: null, lastVal: null, expr: '' };
+const OPS = { '+': (a, b) => a + b, '−': (a, b) => a - b, '×': (a, b) => a * b, '÷': (a, b) => (b === 0 ? NaN : a / b) };
+const calcVal = () => parseFloat(calc.cur) || 0;
+function numToCur(n) {
+  if (!isFinite(n)) return 'Erro';
+  const r = Math.round(n * 1e8) / 1e8;
+  return String(r);
+}
+function dispText(cur) {
+  if (cur === 'Erro') return 'Erro';
+  const neg = cur.startsWith('-'); const c = neg ? cur.slice(1) : cur;
+  const [i, f] = c.split('.');
+  const int = Number(i || 0).toLocaleString('pt-BR');
+  return (neg ? '−' : '') + int + (f !== undefined ? ',' + f : '');
+}
+function renderCalc() {
+  const t = dispText(calc.cur);
+  const el = $('calcVal'); el.textContent = t;
+  const len = t.length; el.style.fontSize = len > 11 ? '1.75rem' : len > 8 ? '2.25rem' : '';
+  $('calcExpr').textContent = calc.expr;
+  document.querySelectorAll('.key.op').forEach((k) => k.classList.toggle('on', calc.fresh && calc.op === k.dataset.k));
+  $('calcClear').textContent = !calc.fresh && calc.cur !== '0' ? 'C' : 'AC';
+  updateCalcHint();
+}
+function updateCalcHint() {
+  const v = calcVal();
+  const hint = $('calcHint');
+  if (calc.cur === 'Erro' || v <= 0 || v > 168) { hint.textContent = ''; return; }
+  const wk = period(v, 'Week', taxYearFor(now.getFullYear()));
+  hint.textContent = `${dec.format(v)} h por semana -> ${fmt(wk.net)} líquido`;
+}
+function calcPress(k) {
+  if (calc.cur === 'Erro' && k !== 'AC') { Object.assign(calc, { cur: '0', prev: null, op: null, fresh: true, expr: '' }); }
+  if (/^[0-9]$/.test(k)) {
+    if (calc.fresh) { calc.cur = k; calc.fresh = false; }
+    else if (calc.cur.replace(/[-.]/g, '').length < 9) calc.cur = calc.cur === '0' ? k : calc.cur + k;
+  } else if (k === ',') {
+    if (calc.fresh) { calc.cur = '0.'; calc.fresh = false; }
+    else if (!calc.cur.includes('.')) calc.cur += '.';
+  } else if (k === 'AC') {
+    if ($('calcClear').textContent === 'C') { calc.cur = '0'; calc.fresh = true; }
+    else Object.assign(calc, { cur: '0', prev: null, op: null, fresh: true, lastOp: null, lastVal: null, expr: '' });
+  } else if (k === '±') {
+    calc.cur = calc.cur.startsWith('-') ? calc.cur.slice(1) : (calc.cur === '0' ? '0' : '-' + calc.cur);
+  } else if (k === '%') {
+    calc.cur = numToCur(calc.op && (calc.op === '+' || calc.op === '−') && calc.prev != null ? calc.prev * calcVal() / 100 : calcVal() / 100);
+  } else if (OPS[k]) {
+    if (calc.op && !calc.fresh && calc.prev != null) calc.cur = numToCur(OPS[calc.op](calc.prev, calcVal()));
+    calc.prev = calcVal(); calc.op = k; calc.fresh = true;
+    calc.expr = `${dispText(calc.cur)} ${k}`;
+  } else if (k === '=') {
+    if (calc.op && calc.prev != null) {
+      const b = calcVal();
+      calc.expr = `${dispText(numToCur(calc.prev))} ${calc.op} ${dispText(numToCur(b))} =`;
+      calc.cur = numToCur(OPS[calc.op](calc.prev, b));
+      calc.lastOp = calc.op; calc.lastVal = b; calc.op = null; calc.prev = null;
+    } else if (calc.lastOp) {
+      const a = calcVal();
+      calc.expr = `${dispText(numToCur(a))} ${calc.lastOp} ${dispText(numToCur(calc.lastVal))} =`;
+      calc.cur = numToCur(OPS[calc.lastOp](a, calc.lastVal));
+    }
+    calc.fresh = true;
+  }
+  renderCalc();
+}
+$('keys').addEventListener('click', (e) => { const b = e.target.closest('[data-k]'); if (b) calcPress(b.dataset.k); });
+$('calcW').addEventListener('keydown', (e) => {
+  const map = { '*': '×', 'x': '×', '/': '÷', '-': '−', '+': '+', 'Enter': '=', '=': '=', ',': ',', '.': ',', 'Escape': 'AC', 'Backspace': 'BS', '%': '%' };
+  let k = /^[0-9]$/.test(e.key) ? e.key : map[e.key];
+  if (!k) return;
+  e.preventDefault();
+  if (k === 'BS') { if (!calc.fresh) { calc.cur = calc.cur.length > 1 ? calc.cur.slice(0, -1) : '0'; if (calc.cur === '-') calc.cur = '0'; renderCalc(); } return; }
+  calcPress(k);
+});
+$('calcRate').addEventListener('click', () => {
+  const a = calcVal();
+  calc.expr = `${dispText(numToCur(a))} × 14,99 =`;
+  calc.cur = numToCur(a * RATE); calc.fresh = true; calc.op = null; calc.prev = null; renderCalc();
+});
+$('calcUse').addEventListener('click', () => {
+  const v = calcVal();
+  if (calc.cur === 'Erro' || v < 0) return;
+  if (state.mode === 'day') {
+    const h = clampH(v, 24); state.dayHours[sel] = h; if (!h) delete state.dayHours[sel];
+    toast(`${dec.format(h)} h lançadas em ${fmtDowShort.format(fromKey(sel)).replace('.', '')}, ${fmtShort.format(fromKey(sel)).replace('.', '')}`);
+  } else if (state.mode === 'month') {
+    state.monthHours[mKey()] = clampH(v, 744); toast(`${dec.format(clampH(v, 744))} h no mês`);
+  } else {
+    state.weekHours = clampH(v); delete state.varied[mKey()]; toast(`${dec.format(clampH(v))} h por semana`);
+  }
+  renderAll(); persist();
+});
+
 /* ---- events ---- */
-const key = () => mKey();
 function setBig(v) {
-  v = clampH(v);
-  if (state.mode === 'month') state.monthHours[key()] = v; else state.weekHours = v;
+  if (state.mode === 'month') state.monthHours[mKey()] = clampH(v, 744); else state.weekHours = clampH(v);
 }
 $('bigHours').addEventListener('input', () => { setBig(parseNum($('bigHours').value)); compute(); persist(); });
 $('bigHours').addEventListener('blur', () => renderAll());
 document.querySelectorAll('[data-big]').forEach((b) => b.addEventListener('click', () => {
-  const cur = parseNum($('bigHours').value);
-  setBig(Math.max(0, cur + Number(b.dataset.big)));
-  renderAll(); persist();
+  setBig(Math.max(0, parseNum($('bigHours').value) + Number(b.dataset.big))); renderAll(); persist();
 }));
-$('quick').addEventListener('click', (e) => {
-  const c = e.target.closest('[data-preset]'); if (!c) return;
-  setBig(Number(c.dataset.preset)); renderAll(); persist();
-});
+$('quick').addEventListener('click', (e) => { const c = e.target.closest('[data-preset]'); if (!c) return; setBig(Number(c.dataset.preset)); renderAll(); persist(); });
 $('seg').addEventListener('click', (e) => {
   const b = e.target.closest('[data-mode]'); if (!b || b.dataset.mode === state.mode) return;
-  const R = computeMonth(state.pension);
-  if (b.dataset.mode === 'month' && state.monthHours[key()] == null) state.monthHours[key()] = Math.round(R.month.hours * 100) / 100;
+  if (b.dataset.mode === 'month' && state.monthHours[mKey()] == null) {
+    state.monthHours[mKey()] = Math.round(computeMonth(state.pension).month.hours * 100) / 100;
+  }
   state.mode = b.dataset.mode; renderAll(); persist();
 });
 $('varied').addEventListener('change', () => {
-  const k = key();
-  if ($('varied').checked) {
-    state.varied[k] = true;
-    weeksOf(view.y, view.m).forEach((w) => { if (state.weeks[w.key] == null) state.weeks[w.key] = state.weekHours; });
-  } else delete state.varied[k];
+  const k = mKey();
+  if ($('varied').checked) { state.varied[k] = true; weeksOf(view.y, view.m).forEach((w) => { if (state.weeks[w.key] == null) state.weeks[w.key] = state.weekHours; }); }
+  else delete state.varied[k];
   renderAll(); persist();
 });
-$('weeks').addEventListener('input', (e) => {
-  const row = e.target.closest('.wrow'); if (!row) return;
-  state.weeks[row.dataset.key] = clampH(parseNum(e.target.value)); compute(); persist();
-});
+$('weeks').addEventListener('input', (e) => { const row = e.target.closest('.wrow'); if (!row) return; state.weeks[row.dataset.key] = clampH(parseNum(e.target.value)); compute(); persist(); });
 $('weeks').addEventListener('click', (e) => {
   const b = e.target.closest('[data-wstep]'); if (!b) return;
-  const row = b.closest('.wrow'); const k = row.dataset.key;
-  state.weeks[k] = clampH((state.weeks[k] ?? state.weekHours) + Number(b.dataset.wstep));
-  renderAll(); persist();
+  const k = b.closest('.wrow').dataset.key;
+  state.weeks[k] = clampH((state.weeks[k] ?? state.weekHours) + Number(b.dataset.wstep)); renderAll(); persist();
 });
 $('weeks').addEventListener('focusout', () => setTimeout(renderAll, 0));
 $('days').addEventListener('input', () => { state.days = Math.min(7, parseNum($('days').value)) || 0; compute(); persist(); });
 $('days').addEventListener('blur', () => renderAll());
-document.querySelectorAll('[data-days]').forEach((b) => b.addEventListener('click', () => {
-  state.days = Math.min(7, Math.max(1, (state.days || 0) + Number(b.dataset.days))); renderAll(); persist();
-}));
+document.querySelectorAll('[data-days]').forEach((b) => b.addEventListener('click', () => { state.days = Math.min(7, Math.max(1, (state.days || 0) + Number(b.dataset.days))); renderAll(); persist(); }));
 $('korting').addEventListener('change', () => { state.korting = $('korting').checked; compute(); persist(); });
 $('pension').addEventListener('change', () => { state.pension = $('pension').checked; compute(); persist(); });
+
+/* calendar events */
+function setDay(k, h) { h = clampH(h, 24); if (h > 0) state.dayHours[k] = h; else delete state.dayHours[k]; }
+$('calGrid').addEventListener('click', (e) => { const b = e.target.closest('[data-day]'); if (!b) return; sel = b.dataset.day; renderCalendar(); });
+$('calGrid').addEventListener('keydown', (e) => {
+  const step = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -7, ArrowDown: 7 }[e.key]; if (!step) return;
+  const d = addDays(fromKey(sel), step); if (d.getMonth() !== view.m) return;
+  e.preventDefault(); sel = dkey(d); renderCalendar(); document.querySelector(`[data-day="${sel}"]`)?.focus();
+});
+$('dayHours').addEventListener('input', () => { setDay(sel, parseNum($('dayHours').value)); compute(); persist(); refreshCells(); });
+$('dayHours').addEventListener('blur', () => renderCalendar());
+document.querySelectorAll('[data-dstep]').forEach((b) => b.addEventListener('click', () => {
+  setDay(sel, (state.dayHours[sel] || 0) + Number(b.dataset.dstep) * 0.5); renderCalendar(); compute(); persist();
+}));
+$('dayChips').addEventListener('click', (e) => {
+  const c = e.target.closest('[data-dh]');
+  if (c) { setDay(sel, Number(c.dataset.dh)); renderCalendar(); compute(); persist(); return; }
+  if (e.target.closest('#repeatDow')) {
+    const sd = fromKey(sel); const h = state.dayHours[sel] || 0; let n = 0;
+    for (let d = new Date(view.y, view.m, 1); d.getMonth() === view.m; d = addDays(d, 1)) if (d.getDay() === sd.getDay()) { setDay(dkey(d), h); n++; }
+    renderCalendar(); compute(); persist();
+    toast(h > 0 ? `${dec.format(h)} h em ${n} ${fmtDow.format(sd).replace('-feira', '')}s` : `${cap(fmtDow.format(sd).replace('-feira', ''))}s marcadas como folga`);
+  }
+  if (e.target.closest('#clearMonth')) {
+    Object.keys(state.dayHours).forEach((k) => { if (k.startsWith(mKey())) delete state.dayHours[k]; });
+    renderCalendar(); compute(); persist(); toast('Horas do mês apagadas');
+  }
+});
+function refreshCells() {
+  const h = state.dayHours[sel] || 0;
+  const cell = document.querySelector(`[data-day="${sel}"]`);
+  if (cell) { cell.classList.toggle('worked', h > 0); cell.querySelector('.hrs').textContent = h > 0 ? dec.format(h) + 'h' : ''; }
+}
+
 const shift = (n) => { const d = new Date(view.y, view.m + n, 1); view = { y: d.getFullYear(), m: d.getMonth() }; renderAll(); };
 $('prevMonth').addEventListener('click', () => shift(-1));
 $('nextMonth').addEventListener('click', () => shift(1));
-$('thisMonth').addEventListener('click', () => { view = { y: now.getFullYear(), m: now.getMonth() }; renderAll(); });
+$('thisMonth').addEventListener('click', () => { view = { y: now.getFullYear(), m: now.getMonth() }; sel = todayKey; renderAll(); });
 const nav = $('nav');
 addEventListener('scroll', () => nav.classList.toggle('scrolled', scrollY > 40), { passive: true });
 
 renderAll();
+renderCalc();
 </script>
 
 </body>
